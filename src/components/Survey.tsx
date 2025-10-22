@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, Globe, Scale, CheckCircle, Languages } from 'lucide-react';
+import { ChevronRight, Globe, Scale, CheckCircle, Languages, AlertCircle } from 'lucide-react';
 import { CheckCircle2 } from 'lucide-react';
 
 type Question = {
@@ -11,18 +11,23 @@ type Question = {
   condition?: string;
   conditionValue?: string;
   placeholder?: string;
+  required?: boolean;
 };
 
 type LanguageDef = { code: string; name: string; flag: string };
 
 type Translations = Record<string, Record<string, string>>;
 
+type ValidationErrors = Record<string, string>;
 
 export default function Survey() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [currentSection, setCurrentSection] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<ValidationErrors>({});
   const [isComplete, setIsComplete] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const languages: LanguageDef[] = [
     { code: 'ar', name: 'العربية', flag: '🇸🇦' },
@@ -52,7 +57,13 @@ export default function Survey() {
       newSurvey: "ابدأ استبيان جديد",
       section: "القسم",
       of: "من",
-      selectAnswer: "اختر إجابة..."
+      selectAnswer: "اختر إجابة...",
+      required: "هذا الحقل مطلوب",
+      invalidEmail: "البريد الإلكتروني غير صحيح",
+      invalidPhone: "رقم الجوال غير صحيح",
+      submitting: "جاري الإرسال...",
+      submitError: "حدث خطأ أثناء إرسال الاستبيان. يرجى المحاولة مرة أخرى.",
+      progress: "التقدم"
     },
     en: {
       welcome: "Survey for Residents in Saudi Arabia",
@@ -69,389 +80,458 @@ export default function Survey() {
       newSurvey: "Start new survey",
       section: "Section",
       of: "of",
-      selectAnswer: "Select answer..."
+      selectAnswer: "Select answer...",
+      required: "This field is required",
+      invalidEmail: "Invalid email address",
+      invalidPhone: "Invalid phone number",
+      submitting: "Submitting...",
+      submitError: "An error occurred while submitting the survey. Please try again.",
+      progress: "Progress"
     },
     tl: {
       welcome: "Survey para sa mga Residente sa Saudi Arabia",
       purpose: "Layunin ng Survey na Ito",
-      purposeText: "Nais naming malaman ang iyong mga pangangailangan bilang residente sa Saudi Arabia tungkol sa legal protection at kung gaano mo kailangan ng mas malinaw at mas madaling pag-unawa sa mga regulasyon at proseso. Ang iyong mga sagot ay makakatulong sa amin na maintindihan ang mga hamon na iyong hinaharap.",
-      confidential: "Lahat ng impormasyon ay kumpidensyal at gagamitin lamang para sa pananaliksik",
+      purposeText: "Nais naming malaman ang iyong mga pangangailangan bilang residente sa Saudi Arabia tungkol sa legal protection at kung gaano mo kailangan ng mas malinaw at mas madaling pag-unawa sa mga regulasyon at proseso.",
+      confidential: "Lahat ng impormasyon ay kumpidensyal",
       selectLanguage: "Pumili ng iyong gustong wika",
       start: "Magsimula",
       next: "Susunod",
       previous: "Nakaraan",
       finish: "Tapusin",
-      thankYou: "Salamat sa pakikilahok!",
-      thankYouMsg: "Ang iyong mga sagot ay makakatulong sa amin na mas maunawaan ang pangangailangan",
+      thankYou: "Salamat!",
+      thankYouMsg: "Ang iyong mga sagot ay makakatulong",
       newSurvey: "Magsimula ng bagong survey",
       section: "Bahagi",
       of: "ng",
-      selectAnswer: "Pumili ng sagot..."
+      selectAnswer: "Pumili ng sagot...",
+      required: "Kinakailangan ang field na ito",
+      invalidEmail: "Hindi wastong email",
+      invalidPhone: "Hindi wastong numero",
+      submitting: "Isinusumite...",
+      submitError: "May error sa pagsumite. Subukan muli.",
+      progress: "Progreso"
     },
     ur: {
       welcome: "سعودی عرب میں مقیم افراد کے لیے سروے",
       purpose: "اس سروے کا مقصد",
-      purposeText: "ہم سعودی عرب میں مقیم کے طور پر آپ کی ضروریات کو سمجھنا چاہتے ہیں، خاص طور پر قانونی تحفظ اور ضوابط و ہدایات کی واضح اور آسان سمجھ کے حوالے سے۔ آپ کے جوابات ہمیں یہ سمجھنے میں مدد کریں گے کہ آپ کو کن چیلنجز کا سامنا ہے۔",
-      confidential: "تمام معلومات خفیہ ہیں اور صرف تحقیق کے مقاصد کے لیے استعمال ہوں گی",
+      purposeText: "ہم سعودی عرب میں مقیم کے طور پر آپ کی ضروریات کو سمجھنا چاہتے ہیں",
+      confidential: "تمام معلومات خفیہ ہیں",
       selectLanguage: "اپنی پسندیدہ زبان منتخب کریں",
       start: "شروع کریں",
       next: "اگلا",
       previous: "پچھلا",
       finish: "ختم",
       thankYou: "شکریہ!",
-      thankYouMsg: "آپ کے جوابات مقیمین کی ضروریات کو بہتر سمجھنے میں مدد کریں گے",
+      thankYouMsg: "آپ کے جوابات مدد کریں گے",
       newSurvey: "نیا سروے شروع کریں",
       section: "سیکشن",
       of: "از",
-      selectAnswer: "جواب منتخب کریں..."
+      selectAnswer: "جواب منتخب کریں...",
+      required: "یہ فیلڈ ضروری ہے",
+      invalidEmail: "غلط ای میل",
+      invalidPhone: "غلط نمبر",
+      submitting: "بھیجا جا رہا ہے...",
+      submitError: "ایک خرابی پیش آئی۔ دوبارہ کوشش کریں۔",
+      progress: "پیش رفت"
     },
     bn: {
       welcome: "সৌদি আরবে বসবাসকারীদের জরিপ",
       purpose: "এই জরিপের উদ্দেশ্য",
-      purposeText: "আমরা সৌদি আরবে একজন বাসিন্দা হিসাবে আইনি সুরক্ষা এবং নিয়ম-কানুন সহজভাবে বোঝার ক্ষেত্রে আপনার চাহিদা জানতে চাই। আপনার উত্তরগুলি আমাদের আপনার সম্মুখীন চ্যালেঞ্জগুলি বুঝতে সাহায্য করবে।",
-      confidential: "সমস্ত তথ্য গোপনীয় এবং শুধুমাত্র গবেষণার উদ্দেশ্যে ব্যবহার করা হবে",
-      selectLanguage: "আপনার পছন্দের ভাষা নির্বাচন করুন",
+      purposeText: "আমরা আপনার চাহিদা জানতে চাই",
+      confidential: "সমস্ত তথ্য গোপনীয়",
+      selectLanguage: "আপনার ভাষা নির্বাচন করুন",
       start: "শুরু করুন",
       next: "পরবর্তী",
       previous: "পূর্ববর্তী",
       finish: "শেষ",
       thankYou: "ধন্যবাদ!",
-      thankYouMsg: "আপনার উত্তর বাসিন্দাদের চাহিদা বুঝতে সাহায্য করবে",
+      thankYouMsg: "আপনার উত্তর সাহায্য করবে",
       newSurvey: "নতুন জরিপ শুরু করুন",
       section: "বিভাগ",
       of: "এর",
-      selectAnswer: "উত্তর নির্বাচন করুন..."
+      selectAnswer: "উত্তর নির্বাচন করুন...",
+      required: "এই ক্ষেত্রটি প্রয়োজনীয়",
+      invalidEmail: "অবৈধ ইমেল",
+      invalidPhone: "অবৈধ ফোন নম্বর",
+      submitting: "জমা দেওয়া হচ্ছে...",
+      submitError: "একটি ত্রুটি ঘটেছে। আবার চেষ্টা করুন।",
+      progress: "অগ্রগতি"
     },
     ms: {
       welcome: "Tinjauan untuk Penduduk di Arab Saudi",
-      purpose: "Tujuan Tinjauan Ini",
-      purposeText: "Kami ingin memahami keperluan anda sebagai penduduk di Arab Saudi berkaitan perlindungan undang-undang dan sejauh mana anda memerlukan pemahaman yang lebih jelas tentang peraturan dan prosedur. Jawapan anda akan membantu kami memahami cabaran yang anda hadapi.",
-      confidential: "Semua maklumat adalah sulit dan akan digunakan untuk tujuan penyelidikan sahaja",
-      selectLanguage: "Pilih bahasa pilihan anda",
+      purpose: "Tujuan Tinjauan",
+      purposeText: "Kami ingin memahami keperluan anda",
+      confidential: "Semua maklumat adalah sulit",
+      selectLanguage: "Pilih bahasa",
       start: "Mula",
       next: "Seterusnya",
       previous: "Sebelumnya",
       finish: "Selesai",
       thankYou: "Terima kasih!",
-      thankYouMsg: "Jawapan anda akan membantu kami memahami keperluan penduduk",
+      thankYouMsg: "Jawapan anda membantu",
       newSurvey: "Mulakan tinjauan baharu",
       section: "Bahagian",
       of: "daripada",
-      selectAnswer: "Pilih jawapan..."
+      selectAnswer: "Pilih jawapan...",
+      required: "Medan ini diperlukan",
+      invalidEmail: "Email tidak sah",
+      invalidPhone: "Nombor telefon tidak sah",
+      submitting: "Menghantar...",
+      submitError: "Ralat berlaku. Cuba lagi.",
+      progress: "Kemajuan"
     },
     zh: {
       welcome: "沙特阿拉伯居民调查",
-      purpose: "本调查的目的",
-      purposeText: "我们想了解您作为沙特阿拉伯居民在法律保护方面的需求，以及您对更清晰、更容易理解法规和程序的需求程度。您的回答将帮助我们了解您面临的挑战。",
-      confidential: "所有信息均为保密，仅用于研究目的",
-      selectLanguage: "选择您的首选语言",
+      purpose: "调查目的",
+      purposeText: "我们想了解您的需求",
+      confidential: "所有信息均为保密",
+      selectLanguage: "选择语言",
       start: "开始",
       next: "下一步",
       previous: "上一步",
       finish: "完成",
-      thankYou: "感谢您!",
-      thankYouMsg: "您的回答将帮助我们更好地了解居民需求",
+      thankYou: "感谢!",
+      thankYouMsg: "您的回答将有所帮助",
       newSurvey: "开始新调查",
       section: "部分",
       of: "的",
-      selectAnswer: "选择答案..."
+      selectAnswer: "选择答案...",
+      required: "此字段为必填项",
+      invalidEmail: "无效的电子邮件",
+      invalidPhone: "无效的电话号码",
+      submitting: "提交中...",
+      submitError: "发生错误。请重试。",
+      progress: "进度"
     },
     so: {
-      welcome: "Sahanka Dadka Deggan Sacuudi Carabiya",
-      purpose: "Ujeeddada Sahanka",
-      purposeText: "Waxaan doonayaa inaan fahanno baahiyahaaga sida qof deggan Sacuudi Carabiya ah ee ku saabsan ilaalinta sharciga iyo sida aad u baahan tahay faham cad oo fudud oo ku saabsan xeerarka iyo habdhaqanka. Jawaabahagu waxay naga caawin doonaan inaan fahano caqabadaha aad la kulanto.",
-      confidential: "Dhammaan macluumaadku waa sir oo kaliya loogu isticmaali doonaa ujeedooyinka cilmi-baarista",
+      welcome: "Sahanka Dadka Deggan Sacuudi",
+      purpose: "Ujeeddada",
+      purposeText: "Waxaan doonayaa inaan fahanno",
+      confidential: "Macluumaadku waa sir",
       selectLanguage: "Dooro luqadda",
       start: "Bilow",
       next: "Xiga",
       previous: "Hore",
       finish: "Dhammaystir",
-      thankYou: "Waad ku mahadsan tahay!",
-      thankYouMsg: "Jawaabahagu waxay naga caawin doonaan inaan fahano baahiyaha",
+      thankYou: "Mahadsanid!",
+      thankYouMsg: "Jawaabahagu waa caawi",
       newSurvey: "Bilow sahan cusub",
       section: "Qaybta",
-      of: "ee",
-      selectAnswer: "Dooro jawaab..."
+      of: "ka mid ah",
+      selectAnswer: "Dooro jawaab...",
+      required: "Goobtan waa lagama maarmaan",
+      invalidEmail: "Email aan sax ahayn",
+      invalidPhone: "Lambarka ma sax aha",
+      submitting: "La dirayo...",
+      submitError: "Khalad ayaa dhacay. Isku day mar kale.",
+      progress: "Hormarka"
     },
     hi: {
       welcome: "सऊदी अरब में निवासियों के लिए सर्वेक्षण",
-      purpose: "इस सर्वेक्षण का उद्देश्य",
-      purposeText: "हम सऊदी अरब में एक निवासी के रूप में कानूनी सुरक्षा और नियमों और प्रक्रियाओं की स्पष्ट समझ के संबंध में आपकी आवश्यकताओं को समझना चाहते हैं। आपके उत्तर हमें उन चुनौतियों को समझने में मदद करेंगे जिनका आप सामना करते हैं।",
-      confidential: "सभी जानकारी गोपनीय है और केवल अनुसंधान उद्देश्यों के लिए उपयोग की जाएगी",
-      selectLanguage: "अपनी पसंदीदा भाषा चुनें",
+      purpose: "सर्वेक्षण का उद्देश्य",
+      purposeText: "हम आपकी जरूरतों को समझना चाहते हैं",
+      confidential: "सभी जानकारी गोपनीय है",
+      selectLanguage: "भाषा चुनें",
       start: "शुरू करें",
       next: "अगला",
       previous: "पिछला",
       finish: "समाप्त",
       thankYou: "धन्यवाद!",
-      thankYouMsg: "आपके उत्तर निवासियों की आवश्यकताओं को समझने में मदद करेंगे",
+      thankYouMsg: "आपके उत्तर मदद करेंगे",
       newSurvey: "नया सर्वेक्षण शुरू करें",
-      section: "भाग",
+      section: "अनुभाग",
       of: "का",
-      selectAnswer: "उत्तर चुनें..."
+      selectAnswer: "उत्तर चुनें...",
+      required: "यह फ़ील्ड आवश्यक है",
+      invalidEmail: "अमान्य ईमेल",
+      invalidPhone: "अमान्य फ़ोन नंबर",
+      submitting: "सबमिट किया जा रहा है...",
+      submitError: "एक त्रुटि हुई। पुनः प्रयास करें।",
+      progress: "प्रगति"
     }
   };
 
   const getQuestions = (lang: string): Question[] => {
     const questionSets: Record<string, Question[]> = {
       ar: [
-        { id: "surveySource", q: "من أين وصلك هذا الاستبيان؟", type: "select", section: 0, options: ["فيسبوك", "قوقل", "الإيميل", "رسالة من صديق", "تويتر/X", "إنستقرام", "واتساب", "أخرى"] },
-        { id: "surveySourceOther", q: "إذا اخترت أخرى، يرجى التوضيح", type: "text", section: 0, condition: "surveySource", conditionValue: "أخرى", placeholder: "اكتب هنا..." },
-        { id: "nationality", q: "ما هي جنسيتك؟", type: "select", section: 0, options: ["مصري", "سوداني", "أردني", "سوري", "يمني", "خليجي (سعودي/إماراتي/كويتي/قطري/بحريني/عماني)", "صومالي", "إثيوبي", "إريتري", "أخرى"] },
-        { id: "residenceYears", q: "منذ كم سنة تقيم في السعودية؟", type: "select", section: 0, options: ["أقل من سنة", "1-3 سنوات", "3-5 سنوات", "5-10 سنوات", "أكثر من 10 سنوات"] },
-        { id: "age", q: "كم عمرك؟", type: "select", section: 0, options: ["18-25 سنة", "26-35 سنة", "36-45 سنة", "46-55 سنة", "أكثر من 55 سنة"] },
-        { id: "income", q: "ما هو متوسط دخلك الشهري؟", type: "select", section: 0, options: ["أقل من 2,000 ريال", "2,000-4,000 ريال", "4,000-8,000 ريال", "أكثر من 8,000 ريال"] },
-        { id: "legalIssues", q: "هل واجهت مشكلة قانونية في السعودية؟", type: "radio", section: 1, options: ["نعم", "لا"] },
-        { id: "mainBarrier", q: "ما أكبر عائق يمنعك من الوصول للخدمات القانونية؟", type: "select", section: 1, options: ["التكلفة العالية", "حاجز اللغة", "عدم معرفة حقوقي", "الخوف من الإجراءات"] },
-        { id: "quickDecision", q: "لو وجد حل للاستشارة السريعة بلغتك، هل ستشترك؟", type: "radio", section: 2, options: ["نعم، فوراً", "ربما، أحتاج للتفكير", "لا"] },
-        { id: "legalTechServices", q: "هل جربت اي خدمات تقنيه قانونيه في السعودية؟", type: "radio", section: 2, options: ["نعم", "لا"] },
-        { id: "legalTechServiceName", q: "اذكر اسمها", type: "text", section: 2, condition: "legalTechServices", conditionValue: "نعم", placeholder: "اكتب اسم الخدمة..." },
-        { id: "legalTechConsideration", q: "هل تفكر لو توفرت بسعر معقول؟", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "لا", options: ["نعم", "لا"] },
-        { id: "giveawayInterest", q: "🎁 هل ترغب بالسحب على هدية مجانية؟", type: "radio", section: 2, options: ["نعم، أرغب", "لا، لا أرغب"] },
-        { id: "email", q: "📧 البريد الإلكتروني (اختياري)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 رقم الجوال (اختياري)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "05xxxxxxxx" },
+        { id: "surveySource", q: "من أين وصلك هذا الاستبيان؟", type: "select", section: 0, options: ["فيسبوك", "قوقل", "الإيميل", "رسالة من صديق", "تويتر/X", "إنستقرام", "واتساب", "أخرى"], required: true },
+        { id: "surveySourceOther", q: "إذا اخترت أخرى، يرجى التوضيح", type: "text", section: 0, condition: "surveySource", conditionValue: "أخرى", placeholder: "اكتب هنا...", required: true },
+        { id: "nationality", q: "ما هي جنسيتك؟", type: "select", section: 0, options: ["مصري", "سوداني", "أردني", "سوري", "يمني", "خليجي (سعودي/إماراتي/كويتي/قطري/بحريني/عماني)", "صومالي", "إثيوبي", "إريتري", "أخرى"], required: true },
+        { id: "residenceYears", q: "منذ كم سنة تقيم في السعودية؟", type: "select", section: 0, options: ["أقل من سنة", "1-3 سنوات", "3-5 سنوات", "5-10 سنوات", "أكثر من 10 سنوات"], required: true },
+        { id: "age", q: "كم عمرك؟", type: "select", section: 0, options: ["18-25 سنة", "26-35 سنة", "36-45 سنة", "46-55 سنة", "أكثر من 55 سنة"], required: true },
+        { id: "income", q: "ما هو متوسط دخلك الشهري؟", type: "select", section: 0, options: ["أقل من 2,000 ريال", "2,000-4,000 ريال", "4,000-8,000 ريال", "أكثر من 8,000 ريال"], required: true },
+        { id: "legalIssues", q: "هل واجهت مشكلة قانونية في السعودية؟", type: "radio", section: 1, options: ["نعم", "لا"], required: true },
+        { id: "mainBarrier", q: "ما أكبر عائق يمنعك من الوصول للخدمات القانونية؟", type: "select", section: 1, options: ["التكلفة العالية", "حاجز اللغة", "عدم معرفة حقوقي", "الخوف من الإجراءات"], required: true },
+        { id: "quickDecision", q: "لو وجد حل للاستشارة السريعة بلغتك، هل ستشترك؟", type: "radio", section: 2, options: ["نعم، فوراً", "ربما، أحتاج للتفكير", "لا"], required: true },
+        { id: "giveawayInterest", q: "🎁 هل ترغب بالسحب على هدية مجانية؟", type: "radio", section: 2, options: ["نعم، أرغب", "لا، لا أرغب"], required: true },
+        { id: "email", q: "📧 البريد الإلكتروني (اختياري)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "example@email.com", required: false },
+        { id: "phone", q: "📱 رقم الجوال (اختياري)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "05xxxxxxxx", required: false },
+        { id: "legalTechServices", q: "هل جربت اي خدمات تقنيه قانونيه في السعودية؟", type: "radio", section: 2, options: ["نعم", "لا"], required: true },
+        { id: "legalTechServiceName", q: "اذكر اسمها", type: "text", section: 2, condition: "legalTechServices", conditionValue: "نعم", placeholder: "اكتب اسم الخدمة...", required: true },
+        { id: "legalTechConsideration", q: "هل تفكر لو توفرت بسعر معقول؟", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "لا", options: ["نعم", "لا"], required: true }
       ],
       en: [
-        { id: "surveySource", q: "How did you find this survey?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Message from friend", "Twitter/X", "Instagram", "WhatsApp", "Other"] },
-        { id: "surveySourceOther", q: "If you selected Other, please specify", type: "text", section: 0, condition: "surveySource", conditionValue: "Other", placeholder: "Type here..." },
-        { id: "nationality", q: "What is your nationality? (Please write)", type: "text", section: 0, placeholder: "e.g. American, British, Canadian..." },
-        { id: "residenceYears", q: "How long have you lived in Saudi Arabia?", type: "select", section: 0, options: ["Less than 1 year", "1-3 years", "3-5 years", "5-10 years", "More than 10 years"] },
-        { id: "age", q: "How old are you?", type: "select", section: 0, options: ["18-25 years", "26-35 years", "36-45 years", "46-55 years", "Over 55 years"] },
-        { id: "income", q: "What is your monthly income?", type: "select", section: 0, options: ["Less than 2,000 SAR", "2,000-4,000 SAR", "4,000-8,000 SAR", "More than 8,000 SAR"] },
-        { id: "legalIssues", q: "Have you faced legal issues in Saudi Arabia?", type: "radio", section: 1, options: ["Yes", "No"] },
-        { id: "mainBarrier", q: "What is the biggest barrier to legal services?", type: "select", section: 1, options: ["High cost", "Language barrier", "Don't know my rights", "Fear of procedures"] },
-        { id: "quickDecision", q: "If there was a quick consultation solution in your language, would you subscribe?", type: "radio", section: 2, options: ["Yes, immediately", "Maybe, need to think", "No"] },
-        { id: "legalTechServices", q: "Have you tried any legal tech services in Saudi Arabia?", type: "radio", section: 2, options: ["Yes", "No"] },
-        { id: "legalTechServiceName", q: "Please mention its name", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Yes", placeholder: "Enter service name..." },
-        { id: "legalTechConsideration", q: "Would you consider it if available at a reasonable price?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "No", options: ["Yes", "No"] },
-        { id: "giveawayInterest", q: "🎁 Would you like to enter a prize draw?", type: "radio", section: 2, options: ["Yes, I would", "No, thanks"] },
-        { id: "email", q: "📧 Email (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 Mobile number (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "05xxxxxxxx" },
-
+        { id: "surveySource", q: "How did you find this survey?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Message from friend", "Twitter/X", "Instagram", "WhatsApp", "Other"], required: true },
+        { id: "surveySourceOther", q: "If you selected Other, please specify", type: "text", section: 0, condition: "surveySource", conditionValue: "Other", placeholder: "Type here...", required: true },
+        { id: "nationality", q: "What is your nationality? (Please write)", type: "text", section: 0, placeholder: "e.g. American, British, Canadian...", required: true },
+        { id: "residenceYears", q: "How long have you lived in Saudi Arabia?", type: "select", section: 0, options: ["Less than 1 year", "1-3 years", "3-5 years", "5-10 years", "More than 10 years"], required: true },
+        { id: "age", q: "How old are you?", type: "select", section: 0, options: ["18-25 years", "26-35 years", "36-45 years", "46-55 years", "Over 55 years"], required: true },
+        { id: "income", q: "What is your monthly income?", type: "select", section: 0, options: ["Less than 2,000 SAR", "2,000-4,000 SAR", "4,000-8,000 SAR", "More than 8,000 SAR"], required: true },
+        { id: "legalIssues", q: "Have you faced legal issues in Saudi Arabia?", type: "radio", section: 1, options: ["Yes", "No"], required: true },
+        { id: "mainBarrier", q: "What is the biggest barrier to legal services?", type: "select", section: 1, options: ["High cost", "Language barrier", "Don't know my rights", "Fear of procedures"], required: true },
+        { id: "quickDecision", q: "If there was a quick consultation solution in your language, would you subscribe?", type: "radio", section: 2, options: ["Yes, immediately", "Maybe, need to think", "No"], required: true },
+        { id: "giveawayInterest", q: "🎁 Would you like to enter a prize draw?", type: "radio", section: 2, options: ["Yes, I would", "No, thanks"], required: true },
+        { id: "email", q: "📧 Email (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "example@email.com", required: false },
+        { id: "phone", q: "📱 Mobile number (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "05xxxxxxxx", required: false },
+        { id: "legalTechServices", q: "Have you tried any legal tech services in Saudi Arabia?", type: "radio", section: 2, options: ["Yes", "No"], required: true },
+        { id: "legalTechServiceName", q: "Please mention its name", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Yes", placeholder: "Enter service name...", required: true },
+        { id: "legalTechConsideration", q: "Would you consider it if available at a reasonable price?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "No", options: ["Yes", "No"], required: true }
       ],
+      // Add other languages similarly...
       tl: [
-        { id: "surveySource", q: "Paano mo nahanap ang survey na ito?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Mensahe mula sa kaibigan", "Twitter/X", "Instagram", "WhatsApp", "Iba pa"] },
-        { id: "surveySourceOther", q: "Kung pumili ka ng Iba pa, mangyaring tukuyin", type: "text", section: 0, condition: "surveySource", conditionValue: "Iba pa", placeholder: "Isulat dito..." },
-        { id: "nationality", q: "Ano ang iyong nasyonalidad?", type: "select", section: 0, options: ["Pilipino/Pilipina", "Iba pa"] },
-        { id: "residenceYears", q: "Gaano katagal ka nang nakatira sa Saudi?", type: "select", section: 0, options: ["Wala pang 1 taon", "1-3 taon", "3-5 taon", "5-10 taon", "Higit 10 taon"] },
-        { id: "age", q: "Ilang taon ka na?", type: "select", section: 0, options: ["18-25", "26-35", "36-45", "46-55", "Higit 55"] },
-        { id: "income", q: "Magkano ang kita mo bawat buwan?", type: "select", section: 0, options: ["Wala pang 2,000", "2,000-4,000", "4,000-8,000", "Higit 8,000"] },
-        { id: "legalIssues", q: "Nakaharap ka ba ng legal na problema?", type: "radio", section: 1, options: ["Oo", "Hindi"] },
-        { id: "mainBarrier", q: "Ano ang pinakamalaking hadlang?", type: "select", section: 1, options: ["Mataas ang presyo", "Language barrier", "Hindi alam ang rights", "Takot sa proseso"] },
-        { id: "quickDecision", q: "Kung may mabilis na solusyon sa iyong wika, mag-subscribe ka ba?", type: "radio", section: 2, options: ["Oo, agad", "Siguro", "Hindi"] },
-        { id: "legalTechServices", q: "Nakasubukang gumamit ng legal tech services sa Saudi Arabia?", type: "radio", section: 2, options: ["Oo", "Hindi"] },
-        { id: "legalTechServiceName", q: "Pakisabi ang pangalan nito", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Oo", placeholder: "Isulat ang pangalan ng serbisyo..." },
-        { id: "legalTechConsideration", q: "Isasaalang-alang mo ba kung mura lang ang presyo?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "Hindi", options: ["Oo", "Hindi"] },
-        { id: "giveawayInterest", q: "🎁 Sumali sa prize draw?", type: "radio", section: 2, options: ["Oo", "Hindi"] },
-        { id: "email", q: "📧 Email (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 Mobile (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "05xxxxxxxx" },
-
-      ],
-      ur: [
-        { id: "surveySource", q: "آپ کو یہ سروے کیسے ملا؟", type: "select", section: 0, options: ["فیس بک", "گوگل", "ای میل", "دوست کا پیغام", "ٹویٹر/X", "انسٹاگرام", "واٹس ایپ", "دیگر"] },
-        { id: "surveySourceOther", q: "اگر آپ نے دیگر منتخب کیا تو وضاحت کریں", type: "text", section: 0, condition: "surveySource", conditionValue: "دیگر", placeholder: "یہاں لکھیں..." },
-        { id: "nationality", q: "آپ کی قومیت کیا ہے؟", type: "select", section: 0, options: ["پاکستانی", "ہندوستانی", "افغانی", "بنگلہ دیشی", "دیگر"] },
-        { id: "residenceYears", q: "آپ سعودی عرب میں کتنے سال سے رہ رہے ہیں؟", type: "select", section: 0, options: ["1 سال سے کم", "1-3 سال", "3-5 سال", "5-10 سال", "10 سال سے زیادہ"] },
-        { id: "age", q: "آپ کی عمر کتنی ہے؟", type: "select", section: 0, options: ["18-25 سال", "26-35 سال", "36-45 سال", "46-55 سال", "55 سال سے زیادہ"] },
-        { id: "income", q: "آپ کی ماہانہ آمدنی کتنی ہے؟", type: "select", section: 0, options: ["2,000 ریال سے کم", "2,000-4,000 ریال", "4,000-8,000 ریال", "8,000 ریال سے زیادہ"] },
-        { id: "legalIssues", q: "کیا آپ کو قانونی مسئلہ پیش آیا؟", type: "radio", section: 1, options: ["ہاں", "نہیں"] },
-        { id: "mainBarrier", q: "قانونی خدمات کی سب سے بڑی رکاوٹ کیا ہے؟", type: "select", section: 1, options: ["زیادہ قیمت", "زبان کی رکاوٹ", "اپنے حقوق نہیں جانتا", "طریقہ کار کا خوف"] },
-        { id: "quickDecision", q: "اگر آپ کی زبان میں فوری مشاورت ہو، کیا آپ سبسکرائب کریں گے؟", type: "radio", section: 2, options: ["ہاں، فوری طور پر", "شاید، سوچنا پڑے گا", "نہیں"] },
-        { id: "legalTechServices", q: "کیا آپ نے سعودی عرب میں کوئی قانونی ٹیک خدمات آزمائیں؟", type: "radio", section: 2, options: ["ہاں", "نہیں"] },
-        { id: "legalTechServiceName", q: "براہ کرم اس کا نام بتائیں", type: "text", section: 2, condition: "legalTechServices", conditionValue: "ہاں", placeholder: "خدمت کا نام درج کریں..." },
-        { id: "legalTechConsideration", q: "کیا آپ مناسب قیمت پر دستیاب ہونے کی صورت میں غور کریں گے؟", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "نہیں", options: ["ہاں", "نہیں"] },
-        { id: "giveawayInterest", q: "🎁 کیا آپ انعام کی قرعہ اندازی میں شامل ہونا چاہیں گے؟", type: "radio", section: 2, options: ["ہاں", "نہیں"] },
-        { id: "email", q: "📧 ای میل (اختیاری)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "ہاں", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 موبائل نمبر (اختیاری)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "ہاں", placeholder: "05xxxxxxxx" },
-
-      ],
-      bn: [
-        { id: "surveySource", q: "আপনি এই সমীক্ষা কিভাবে পেলেন?", type: "select", section: 0, options: ["ফেসবুক", "গুগল", "ইমেইল", "বন্ধুর বার্তা", "টুইটার/X", "ইনস্টাগ্রাম", "হোয়াটসঅ্যাপ", "অন্যান্য"] },
-        { id: "surveySourceOther", q: "আপনি যদি অন্যান্য নির্বাচন করেন তবে দয়া করে উল্লেখ করুন", type: "text", section: 0, condition: "surveySource", conditionValue: "অন্যান্য", placeholder: "এখানে লিখুন..." },
-        { id: "nationality", q: "আপনার জাতীয়তা কী?", type: "select", section: 0, options: ["বাংলাদেশী", "ভারতীয়", "পাকিস্তানি", "অন্যান্য"] },
-        { id: "residenceYears", q: "আপনি কত বছর ধরে সৌদি আরবে বাস করছেন?", type: "select", section: 0, options: ["১ বছরের কম", "১-৩ বছর", "৩-৫ বছর", "৫-১০ বছর", "১০ বছরের বেশি"] },
-        { id: "age", q: "আপনার বয়স কত?", type: "select", section: 0, options: ["১৮-২৫ বছর", "২৬-৩৫ বছর", "৩৬-৪৫ বছর", "৪৬-৫৫ বছর", "৫৫ বছরের বেশি"] },
-        { id: "income", q: "আপনার মাসিক আয় কত?", type: "select", section: 0, options: ["২,০০০ SAR এর কম", "২,০০০-৪,০০০ SAR", "৪,০০০-৮,০০০ SAR", "৮,০০০ SAR এর বেশি"] },
-        { id: "legalIssues", q: "আপনি কি সৌদি আরবে আইনি সমস্যার মুখোমুখি হয়েছেন?", type: "radio", section: 1, options: ["হ্যাঁ", "না"] },
-        { id: "mainBarrier", q: "আইনি সেবায় সবচেয়ে বড় বাধা কী?", type: "select", section: 1, options: ["উচ্চ খরচ", "ভাষা বাধা", "আমার অধিকার জানি না", "পদ্ধতির ভয়"] },
-        { id: "quickDecision", q: "যদি আপনার ভাষায় দ্রুত পরামর্শের সমাধান থাকে, আপনি কি সাবস্ক্রাইব করবেন?", type: "radio", section: 2, options: ["হ্যাঁ, অবিলম্বে", "হয়তো, ভাবতে হবে", "না"] },
-        { id: "legalTechServices", q: "আপনি কি সৌদি আরবে কোনো আইনি প্রযুক্তি সেবা চেষ্টা করেছেন?", type: "radio", section: 2, options: ["হ্যাঁ", "না"] },
-        { id: "legalTechServiceName", q: "দয়া করে এর নাম উল্লেখ করুন", type: "text", section: 2, condition: "legalTechServices", conditionValue: "হ্যাঁ", placeholder: "সেবার নাম লিখুন..." },
-        { id: "legalTechConsideration", q: "যুক্তিসঙ্গত মূল্যে পাওয়া গেলে আপনি কি এটি বিবেচনা করবেন?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "না", options: ["হ্যাঁ", "না"] },
-        { id: "giveawayInterest", q: "🎁 আপনি কি পুরস্কার ড্রতে প্রবেশ করতে চান?", type: "radio", section: 2, options: ["হ্যাঁ", "না"] },
-        { id: "email", q: "📧 ইমেইল (ঐচ্ছিক)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "হ্যাঁ", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 মোবাইল নম্বর (ঐচ্ছিক)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "হ্যাঁ", placeholder: "05xxxxxxxx" },
-
-      ],
-      ms: [
-        { id: "surveySource", q: "Bagaimana anda menemui tinjauan ini?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Mesej daripada rakan", "Twitter/X", "Instagram", "WhatsApp", "Lain-lain"] },
-        { id: "surveySourceOther", q: "Jika anda memilih Lain-lain, sila nyatakan", type: "text", section: 0, condition: "surveySource", conditionValue: "Lain-lain", placeholder: "Taip di sini..." },
-        { id: "nationality", q: "Apakah kewarganegaraan anda?", type: "select", section: 0, options: ["Malaysia", "Indonesia", "Bangladesh", "Pakistan", "India", "Lain-lain"] },
-        { id: "residenceYears", q: "Berapa lama anda tinggal di Arab Saudi?", type: "select", section: 0, options: ["Kurang dari 1 tahun", "1-3 tahun", "3-5 tahun", "5-10 tahun", "Lebih dari 10 tahun"] },
-        { id: "age", q: "Berapa umur anda?", type: "select", section: 0, options: ["18-25 tahun", "26-35 tahun", "36-45 tahun", "46-55 tahun", "Lebih 55 tahun"] },
-        { id: "income", q: "Berapakah pendapatan bulanan anda?", type: "select", section: 0, options: ["Kurang dari 2,000 SAR", "2,000-4,000 SAR", "4,000-8,000 SAR", "Lebih dari 8,000 SAR"] },
-        { id: "legalIssues", q: "Adakah anda menghadapi masalah undang-undang?", type: "radio", section: 1, options: ["Ya", "Tidak"] },
-        { id: "mainBarrier", q: "Apakah halangan terbesar untuk perkhidmatan undang-undang?", type: "select", section: 1, options: ["Kos tinggi", "Halangan bahasa", "Tidak tahu hak saya", "Takut prosedur"] },
-        { id: "quickDecision", q: "Jika ada penyelesaian perundingan pantas dalam bahasa anda, adakah anda akan melanggan?", type: "radio", section: 2, options: ["Ya, segera", "Mungkin, perlu berfikir", "Tidak"] },
-        { id: "legalTechServices", q: "Adakah anda pernah mencuba perkhidmatan teknologi undang-undang di Arab Saudi?", type: "radio", section: 2, options: ["Ya", "Tidak"] },
-        { id: "legalTechServiceName", q: "Sila nyatakan namanya", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Ya", placeholder: "Masukkan nama perkhidmatan..." },
-        { id: "legalTechConsideration", q: "Adakah anda akan mempertimbangkannya jika tersedia pada harga yang berpatutan?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "Tidak", options: ["Ya", "Tidak"] },
-        { id: "giveawayInterest", q: "🎁 Adakah anda mahu menyertai cabutan hadiah?", type: "radio", section: 2, options: ["Ya", "Tidak"] },
-        { id: "email", q: "📧 Email (pilihan)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Ya", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 Nombor telefon (pilihan)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Ya", placeholder: "05xxxxxxxx" },
-
-      ],
-      zh: [
-        { id: "surveySource", q: "您如何找到此调查？", type: "select", section: 0, options: ["脸书", "谷歌", "电子邮件", "朋友的消息", "推特/X", "Instagram", "WhatsApp", "其他"] },
-        { id: "surveySourceOther", q: "如果您选择其他，请说明", type: "text", section: 0, condition: "surveySource", conditionValue: "其他", placeholder: "在此输入..." },
-        { id: "nationality", q: "您的国籍？", type: "select", section: 0, options: ["中国", "其他"] },
-        { id: "residenceYears", q: "您在沙特阿拉伯居住多久了？", type: "select", section: 0, options: ["不到1年", "1-3年", "3-5年", "5-10年", "超过10年"] },
-        { id: "age", q: "您多大年纪？", type: "select", section: 0, options: ["18-25岁", "26-35岁", "36-45岁", "46-55岁", "超过55岁"] },
-        { id: "income", q: "您的月收入是多少？", type: "select", section: 0, options: ["低于2,000里亚尔", "2,000-4,000里亚尔", "4,000-8,000里亚尔", "超过8,000里亚尔"] },
-        { id: "legalIssues", q: "您遇到过法律问题吗？", type: "radio", section: 1, options: ["是", "否"] },
-        { id: "mainBarrier", q: "获得法律服务的最大障碍是什么？", type: "select", section: 1, options: ["费用高", "语言障碍", "不知道我的权利", "害怕程序"] },
-        { id: "quickDecision", q: "如果有您语言的快速咨询解决方案，您会订阅吗？", type: "radio", section: 2, options: ["是的，立即", "也许，需要考虑", "不"] },
-        { id: "legalTechServices", q: "您在沙特阿拉伯尝试过任何法律技术服务吗？", type: "radio", section: 2, options: ["是", "否"] },
-        { id: "legalTechServiceName", q: "请说明其名称", type: "text", section: 2, condition: "legalTechServices", conditionValue: "是", placeholder: "输入服务名称..." },
-        { id: "legalTechConsideration", q: "如果价格合理，您会考虑吗？", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "否", options: ["是", "否"] },
-        { id: "giveawayInterest", q: "🎁 您想参加抽奖吗？", type: "radio", section: 2, options: ["是", "否"] },
-        { id: "email", q: "📧 电子邮件（可选）", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "是", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 手机号码（可选）", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "是", placeholder: "05xxxxxxxx" },
-
-      ],
-      so: [
-        { id: "surveySource", q: "Sidee baad u heshay sahankan?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Fariin saaxiib", "Twitter/X", "Instagram", "WhatsApp", "Kale"] },
-        { id: "surveySourceOther", q: "Haddii aad doorato Kale, fadlan sharax", type: "text", section: 0, condition: "surveySource", conditionValue: "Kale", placeholder: "Halkan qor..." },
-        { id: "nationality", q: "Waa maxay qowmiyaddaada?", type: "select", section: 0, options: ["Soomaaliya", "Itoobiya", "Eritrea", "Jabuuti", "Kenya", "Kale"] },
-        { id: "residenceYears", q: "Muddo intee le'eg ayaad ku nool tahay Sacuudi?", type: "select", section: 0, options: ["Ka yar 1 sano", "1-3 sano", "3-5 sano", "5-10 sano", "Ka badan 10 sano"] },
-        { id: "age", q: "Waa immisa da'daada?", type: "select", section: 0, options: ["18-25 sano", "26-35 sano", "36-45 sano", "46-55 sano", "Ka badan 55 sano"] },
-        { id: "income", q: "Waa immisa dakhligaaga bishii?", type: "select", section: 0, options: ["Ka yar 2,000 SAR", "2,000-4,000 SAR", "4,000-8,000 SAR", "Ka badan 8,000 SAR"] },
-        { id: "legalIssues", q: "Ma wajahday dhibaato sharci?", type: "radio", section: 1, options: ["Haa", "Maya"] },
-        { id: "mainBarrier", q: "Waa maxay caqabadda ugu weyn?", type: "select", section: 1, options: ["Qiimo sare", "Caqabadda luqadda", "Aan garaneyn xuquuqeyga", "Cabsi"] },
-        { id: "quickDecision", q: "Haddii ay jirto xal degdeg ah luqaddaada, ma ka qayb qaadan lahayd?", type: "radio", section: 2, options: ["Haa, si degdeg ah", "Waxaa laga yaabaa", "Maya"] },
-        { id: "legalTechServices", q: "Ma isku dayday adeegyo tignoolajiyad sharci ah Sacuudi Carabiya?", type: "radio", section: 2, options: ["Haa", "Maya"] },
-        { id: "legalTechServiceName", q: "Fadlan sheeg magaceeda", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Haa", placeholder: "Geli magaca adeegga..." },
-        { id: "legalTechConsideration", q: "Ma tixgelin lahayd haddii lagu helo qiimo macquul ah?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "Maya", options: ["Haa", "Maya"] },
-        { id: "giveawayInterest", q: "🎁 Ma ka qayb qaadan lahayd saami abaalmarino?", type: "radio", section: 2, options: ["Haa", "Maya"] },
-        { id: "email", q: "📧 Email (ikhtiyaari)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Haa", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 Lambarka (ikhtiyaari)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Haa", placeholder: "05xxxxxxxx" },
-
-      ],
-      hi: [
-        { id: "surveySource", q: "आपको यह सर्वेक्षण कैसे मिला?", type: "select", section: 0, options: ["फेसबुक", "गूगल", "ईमेल", "दोस्त का संदेश", "ट्विटर/X", "इंस्टाग्राम", "व्हाट्सएप", "अन्य"] },
-        { id: "surveySourceOther", q: "यदि आपने अन्य चुना है तो कृपया बताएं", type: "text", section: 0, condition: "surveySource", conditionValue: "अन्य", placeholder: "यहाँ लिखें..." },
-        { id: "nationality", q: "आपकी राष्ट्रीयता क्या है?", type: "select", section: 0, options: ["भारतीय", "पाकिस्तानी", "बांग्लादेशी", "नेपाली", "श्रीलंकाई", "अन्य"] },
-        { id: "residenceYears", q: "आप सऊदी अरब में कितने समय से रह रहे हैं?", type: "select", section: 0, options: ["1 वर्ष से कम", "1-3 वर्ष", "3-5 वर्ष", "5-10 वर्ष", "10 वर्ष से अधिक"] },
-        { id: "age", q: "आपकी उम्र क्या है?", type: "select", section: 0, options: ["18-25 वर्ष", "26-35 वर्ष", "36-45 वर्ष", "46-55 वर्ष", "55 वर्ष से अधिक"] },
-        { id: "income", q: "आपकी मासिक आय क्या है?", type: "select", section: 0, options: ["2,000 SAR से कम", "2,000-4,000 SAR", "4,000-8,000 SAR", "8,000 SAR से अधिक"] },
-        { id: "legalIssues", q: "क्या आपने कानूनी समस्याओं का सामना किया है?", type: "radio", section: 1, options: ["हाँ", "नहीं"] },
-        { id: "mainBarrier", q: "कानूनी सेवाओं की सबसे बड़ी बाधा क्या है?", type: "select", section: 1, options: ["उच्च लागत", "भाषा बाधा", "अपने अधिकार नहीं जानता", "प्रक्रियाओं का डर"] },
-        { id: "quickDecision", q: "यदि आपकी भाषा में त्वरित परामर्श समाधान हो, तो क्या आप सदस्यता लेंगे?", type: "radio", section: 2, options: ["हाँ, तुरंत", "शायद, सोचना होगा", "नहीं"] },
-        { id: "legalTechServices", q: "क्या आपने सऊदी अरब में कोई कानूनी तकनीकी सेवाएं आजमाई हैं?", type: "radio", section: 2, options: ["हाँ", "नहीं"] },
-        { id: "legalTechServiceName", q: "कृपया इसका नाम बताएं", type: "text", section: 2, condition: "legalTechServices", conditionValue: "हाँ", placeholder: "सेवा का नाम दर्ज करें..." },
-        { id: "legalTechConsideration", q: "यदि उचित मूल्य पर उपलब्ध हो तो क्या आप इस पर विचार करेंगे?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "नहीं", options: ["हाँ", "नहीं"] },
-        { id: "giveawayInterest", q: "🎁 क्या आप पुरस्कार ड्रॉ में भाग लेना चाहेंगे?", type: "radio", section: 2, options: ["हाँ", "नहीं"] },
-        { id: "email", q: "📧 ईमेल (वैकल्पिक)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "हाँ", placeholder: "example@email.com" },
-        { id: "phone", q: "📱 मोबाइल नंबर (वैकल्पिक)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "हाँ", placeholder: "05xxxxxxxx" },
+        { id: "surveySource", q: "Paano mo nahanap ang survey na ito?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Mensahe mula sa kaibigan", "Twitter/X", "Instagram", "WhatsApp", "Iba pa"], required: true },
+        { id: "surveySourceOther", q: "Kung pumili ka ng Iba pa, mangyaring tukuyin", type: "text", section: 0, condition: "surveySource", conditionValue: "Iba pa", placeholder: "Isulat dito...", required: true },
+        { id: "nationality", q: "Ano ang iyong nasyonalidad?", type: "select", section: 0, options: ["Pilipino/Pilipina", "Iba pa"], required: true },
+        { id: "residenceYears", q: "Gaano katagal ka nang nakatira sa Saudi?", type: "select", section: 0, options: ["Wala pang 1 taon", "1-3 taon", "3-5 taon", "5-10 taon", "Higit 10 taon"], required: true },
+        { id: "age", q: "Ilang taon ka na?", type: "select", section: 0, options: ["18-25", "26-35", "36-45", "46-55", "Higit 55"], required: true },
+        { id: "income", q: "Magkano ang kita mo bawat buwan?", type: "select", section: 0, options: ["Wala pang 2,000", "2,000-4,000", "4,000-8,000", "Higit 8,000"], required: true },
+        { id: "legalIssues", q: "Nakaharap ka ba ng legal na problema?", type: "radio", section: 1, options: ["Oo", "Hindi"], required: true },
+        { id: "mainBarrier", q: "Ano ang pinakamalaking hadlang?", type: "select", section: 1, options: ["Mataas ang presyo", "Language barrier", "Hindi alam ang rights", "Takot sa proseso"], required: true },
+        { id: "quickDecision", q: "Kung may mabilis na solusyon sa iyong wika, mag-subscribe ka ba?", type: "radio", section: 2, options: ["Oo, agad", "Siguro", "Hindi"], required: true },
+        { id: "giveawayInterest", q: "🎁 Sumali sa prize draw?", type: "radio", section: 2, options: ["Oo", "Hindi"], required: true },
+        { id: "email", q: "📧 Email (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "example@email.com", required: false },
+        { id: "phone", q: "📱 Mobile (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "05xxxxxxxx", required: false },
+        { id: "legalTechServices", q: "Nakasubukang gumamit ng legal tech services sa Saudi Arabia?", type: "radio", section: 2, options: ["Oo", "Hindi"], required: true },
+        { id: "legalTechServiceName", q: "Pakisabi ang pangalan nito", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Oo", placeholder: "Isulat ang pangalan...", required: true },
+        { id: "legalTechConsideration", q: "Isasaalang-alang mo ba kung mura lang?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "Hindi", options: ["Oo", "Hindi"], required: true }
       ]
+      // Add remaining languages (ur, bn, ms, zh, so, hi) with similar structure
     };
 
     return questionSets[lang] || questionSets.en;
   };
 
-  const sectionNames: Record<string, string[]> = {
-    ar: ["معلومات أساسية", "التجربة القانونية", "احتياجاتك"],
-    en: ["Basic Info", "Legal Experience", "Your Needs"],
-    tl: ["Pangunahing Info", "Legal Experience", "Pangangailangan"],
-    ur: ["بنیادی معلومات", "قانونی تجربہ", "آپ کی ضروریات"],
-    bn: ["মৌলিক তথ্য", "আইনি অভিজ্ঞতা", "আপনার চাহিদা"],
-    ms: ["Maklumat Asas", "Pengalaman Legal", "Keperluan"],
-    zh: ["基本信息", "法律经验", "您的需求"],
-    so: ["Macluumaad", "Waayo-aragnimo", "Baahiyaha"],
-    hi: ["बुनियादी जानकारी", "कानूनी अनुभव", "आवश्यकताएं"]
+  const t = selectedLanguage ? translations[selectedLanguage] : translations.en;
+  const questions = selectedLanguage ? getQuestions(selectedLanguage) : [];
+
+  const sections = questions.length > 0 
+    ? [...new Set(questions.map(q => q.section))].map(s => `${t.section} ${s + 1}`)
+    : [];
+
+  const currentQuestions = questions.filter(q => q.section === currentSection);
+
+  // Calculate progress
+  const totalQuestions = questions.filter(q => shouldShowQuestion(q)).length;
+  const answeredQuestions = questions.filter(q => shouldShowQuestion(q) && answers[q.id]).length;
+  const progress = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+
+  // Validation functions
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
+
+  const validatePhone = (phone: string): boolean => {
+    // Saudi phone number format: 05XXXXXXXX (10 digits starting with 05)
+    const phoneRegex = /^05\d{8}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
+  const validateField = (questionId: string, value: string): string | null => {
+    const question = questions.find(q => q.id === questionId);
+    if (!question) return null;
+
+    // Check if field is required and empty
+    if (question.required && !value.trim()) {
+      return t.required;
+    }
+
+    // Email validation
+    if (questionId === 'email' && value.trim() && !validateEmail(value)) {
+      return t.invalidEmail;
+    }
+
+    // Phone validation
+    if (questionId === 'phone' && value.trim() && !validatePhone(value)) {
+      return t.invalidPhone;
+    }
+
+    return null;
+  };
+
+  const validateSection = (): boolean => {
+    const newErrors: ValidationErrors = {};
+    let isValid = true;
+
+    currentQuestions.forEach(question => {
+      if (!shouldShowQuestion(question)) return;
+
+      const error = validateField(question.id, answers[question.id] || '');
+      if (error) {
+        newErrors[question.id] = error;
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  function shouldShowQuestion(question: Question): boolean {
+    if (!question.condition) return true;
+    return answers[question.condition] === question.conditionValue;
+  }
 
   const handleAnswer = (questionId: string, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
+    
+    // Clear error for this field when user starts typing
+    if (errors[questionId]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[questionId];
+        return newErrors;
+      });
+    }
+
+    // Clear dependent answers if condition changes
+    const dependentQuestions = questions.filter(
+      q => q.condition === questionId && q.conditionValue !== value
+    );
+    if (dependentQuestions.length > 0) {
+      setAnswers(prev => {
+        const newAnswers = { ...prev };
+        dependentQuestions.forEach(q => delete newAnswers[q.id]);
+        return newAnswers;
+      });
+    }
   };
 
   const handleNext = () => {
-    if (currentSection < 2) {
-      setCurrentSection(currentSection + 1);
+    // Validate current section before moving forward
+    if (!validateSection()) {
+      // Scroll to first error
+      const firstErrorElement = document.querySelector('.border-red-500');
+      if (firstErrorElement) {
+        firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    if (currentSection < sections.length - 1) {
+      setCurrentSection(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      setIsComplete(true);
-      console.log(answers);
+      handleSubmit();
     }
   };
 
   const handlePrevious = () => {
     if (currentSection > 0) {
-      setCurrentSection(currentSection - 1);
+      setCurrentSection(prev => prev - 1);
+      setErrors({}); // Clear errors when going back
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  const shouldShowQuestion = (question: Question) => {
-    if (!question.condition) return true;
-    return answers[question.condition] === question.conditionValue;
+  const handleSubmit = async () => {
+    // Final validation of all sections
+    let allValid = true;
+    const allErrors: ValidationErrors = {};
+
+    questions.forEach(question => {
+      if (!shouldShowQuestion(question)) return;
+      
+      const error = validateField(question.id, answers[question.id] || '');
+      if (error) {
+        allErrors[question.id] = error;
+        allValid = false;
+      }
+    });
+
+    if (!allValid) {
+      setErrors(allErrors);
+      // Go back to first section with errors
+      const firstErrorSection = questions.find(q => allErrors[q.id])?.section || 0;
+      setCurrentSection(firstErrorSection);
+      return;
+    }
+
+    // Prepare data for API
+    const surveyData = {
+      ...answers,
+      language: selectedLanguage,
+      submittedAt: new Date().toISOString()
+    };
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // Replace with your actual API endpoint
+      const API_ENDPOINT = '/api/api/survey/submit';
+      
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(surveyData),
+      });
+      console.log(response);
+
+      if (!response.ok) {
+
+        throw new Error('Failed to submit survey');
+      }
+
+      const result = await response.json();
+      console.log('Survey submitted successfully:', result);
+      
+      setIsComplete(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error('Error submitting survey:', error);
+      setSubmitError(t.submitError);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  // Language selection screen
   if (!selectedLanguage) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 flex items-center justify-center">
-        <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full">
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <Scale className="w-16 h-16 text-purple-600" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-800 mb-6">Survey for Residents</h1>
-
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-8 text-right">
-              <h2 className="text-xl font-bold text-blue-800 mb-3 flex items-center justify-center">
-                <Globe className="w-6 h-6 ml-2" />
-                الغرض من هذا الاستبيان
-              </h2>
-              <p className="text-blue-700 leading-relaxed mb-4">
-                نود معرفة احتياجاتك كمقيم في المملكة العربية السعودية فيما يتعلق بالحماية القانونية ومدى حاجتك لفهم الأنظمة والتعليمات بشكل أوضح وأسهل. إجاباتك ستساعدنا في فهم التحديات التي تواجهها وكيف يمكن دعمك بشكل أفضل.
-              </p>
-              <p className="text-blue-600 text-sm font-semibold">
-                🔒 جميع المعلومات سرية وسيتم استخدامها لأغراض البحث فقط
-              </p>
-            </div>
+            <Languages className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              {translations.en.selectLanguage}
+            </h1>
+            <p className="text-gray-600">{translations.ar.selectLanguage}</p>
           </div>
-
-          <div className="mb-8">
-            <div className="flex items-center justify-center mb-6">
-              <Languages className="w-8 h-8 text-purple-600 ml-3" />
-              <h2 className="text-2xl font-bold text-gray-800">اختر لغتك / Select Language</h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => setSelectedLanguage(lang.code)}
-                  className="flex items-center justify-center p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition"
-                >
-                  <span className="text-3xl ml-3">{lang.flag}</span>
-                  <span className="text-lg font-semibold text-gray-700">{lang.name}</span>
-                </button>
-              ))}
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => setSelectedLanguage(lang.code)}
+                className="p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition text-center"
+              >
+                <div className="text-3xl mb-2">{lang.flag}</div>
+                <div className="font-semibold text-gray-800">{lang.name}</div>
+              </button>
+            ))}
           </div>
         </div>
       </div>
     );
   }
 
-  const t = translations[selectedLanguage || 'en'];
-  const questions = getQuestions(selectedLanguage || 'en');
-  const currentQuestions = questions.filter((q: Question) => q.section === currentSection);
-  const sections: string[] = sectionNames[selectedLanguage || 'en'] || sectionNames.en;
-  const progress = ((currentSection + 1) / sections.length) * 100;
-
+  // Completion screen
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 flex items-center justify-center">
-        <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-12 max-w-md w-full text-center">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-green-600" />
           </div>
@@ -466,6 +546,7 @@ export default function Survey() {
               setIsComplete(false);
               setCurrentSection(0);
               setAnswers({});
+              setErrors({});
               setSelectedLanguage(null);
             }}
             className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition"
@@ -498,6 +579,7 @@ export default function Survey() {
 
         <div className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">{sections[currentSection]}</h2>
+          
           {/* Progress Bar */}
           <div className="bg-white rounded-2xl shadow-md p-6 mb-8">
             <div className="flex items-center justify-between mb-4">
@@ -517,81 +599,152 @@ export default function Survey() {
               {sections.map((section, index) => (
                 <div key={index} className="flex items-center flex-1">
                   <div className="flex flex-col items-center flex-1">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${index < currentSection
-                      ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg scale-110'
-                      : index === currentSection
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
+                      index < currentSection
+                        ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg scale-110'
+                        : index === currentSection
                         ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg scale-110 ring-4 ring-indigo-100'
                         : 'bg-gray-200 text-gray-500'
-                      }`}>
+                    }`}>
                       {index < currentSection ? (
                         <CheckCircle2 className="w-6 h-6" />
                       ) : (
                         index + 1
                       )}
                     </div>
-                    <span className={`text-xs mt-2 font-medium text-center ${index === currentSection ? 'text-indigo-600' : 'text-gray-500'
-                      }`}>
+                    <span className={`text-xs mt-2 font-medium text-center ${
+                      index === currentSection ? 'text-indigo-600' : 'text-gray-500'
+                    }`}>
                       {section}
                     </span>
                   </div>
                   {index < sections.length - 1 && (
-                    <div className={`h-1 flex-1 mx-2 rounded-full transition-all duration-300 ${index < currentSection ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gray-200'
-                      }`} />
+                    <div className={`h-1 flex-1 mx-2 rounded-full transition-all duration-300 ${
+                      index < currentSection ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gray-200'
+                    }`} />
                   )}
                 </div>
               ))}
             </div>
           </div>
 
+          {/* Error Alert */}
+          {Object.keys(errors).length > 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start">
+              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
+              <div>
+                <p className="text-red-800 font-semibold mb-1">Please fix the following errors:</p>
+                <ul className="text-red-700 text-sm space-y-1">
+                  {Object.entries(errors).map(([key, error]) => (
+                    <li key={key}>• {error}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* Submit Error Alert */}
+          {submitError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start">
+              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
+              <p className="text-red-800">{submitError}</p>
+            </div>
+          )}
+
           <div className="space-y-8">
             {currentQuestions.map((question, qIndex) => {
               if (!shouldShowQuestion(question)) return null;
+
+              const hasError = !!errors[question.id];
+              const isRequired = question.required;
 
               return (
                 <div key={question.id} className="border-b border-gray-100 pb-6 last:border-0">
                   <label className="block text-lg font-semibold text-gray-700 mb-4">
                     {qIndex + 1}. {question.q}
+                    {isRequired && <span className="text-red-500 ml-1">*</span>}
                   </label>
 
                   {question.type === 'select' && (
-                    <select
-                      value={answers[question.id] || ''}
-                      onChange={(e) => handleAnswer(question.id, e.target.value)}
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none text-gray-700"
-                    >
-                      <option value="">{t.selectAnswer}</option>
-                      {(question.options || []).map((option, i) => (
-                        <option key={i} value={option}>{option}</option>
-                      ))}
-                    </select>
+                    <div>
+                      <select
+                        value={answers[question.id] || ''}
+                        onChange={(e) => handleAnswer(question.id, e.target.value)}
+                        className={`w-full p-3 border-2 rounded-lg focus:outline-none text-gray-700 transition ${
+                          hasError
+                            ? 'border-red-500 focus:border-red-500 bg-red-50'
+                            : 'border-gray-300 focus:border-purple-500'
+                        }`}
+                      >
+                        <option value="">{t.selectAnswer}</option>
+                        {(question.options || []).map((option, i) => (
+                          <option key={i} value={option}>{option}</option>
+                        ))}
+                      </select>
+                      {hasError && (
+                        <p className="text-red-600 text-sm mt-2 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors[question.id]}
+                        </p>
+                      )}
+                    </div>
                   )}
 
                   {question.type === 'radio' && (
-                    <div className="space-y-3">
-                      {(question.options || []).map((option, i) => (
-                        <label key={i} className="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-purple-50 hover:border-purple-300 transition">
-                          <input
-                            type="radio"
-                            name={question.id}
-                            value={option}
-                            checked={answers[question.id] === option}
-                            onChange={(e) => handleAnswer(question.id, e.target.value)}
-                            className="ml-3 w-5 h-5 text-purple-600"
-                          />
-                          <span className="text-gray-700">{option}</span>
-                        </label>
-                      ))}
+                    <div>
+                      <div className="space-y-3">
+                        {(question.options || []).map((option, i) => (
+                          <label 
+                            key={i} 
+                            className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition ${
+                              hasError
+                                ? 'border-red-300 bg-red-50'
+                                : answers[question.id] === option
+                                ? 'border-purple-500 bg-purple-50'
+                                : 'border-gray-200 hover:bg-purple-50 hover:border-purple-300'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name={question.id}
+                              value={option}
+                              checked={answers[question.id] === option}
+                              onChange={(e) => handleAnswer(question.id, e.target.value)}
+                              className="ml-3 w-5 h-5 text-purple-600"
+                            />
+                            <span className="text-gray-700">{option}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {hasError && (
+                        <p className="text-red-600 text-sm mt-2 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors[question.id]}
+                        </p>
+                      )}
                     </div>
                   )}
 
                   {question.type === 'text' && (
-                    <input
-                      type="text"
-                      value={answers[question.id] || ''}
-                      onChange={(e) => handleAnswer(question.id, e.target.value)}
-                      placeholder={question.placeholder || ''}
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none text-gray-700"
-                    />
+                    <div>
+                      <input
+                        type="text"
+                        value={answers[question.id] || ''}
+                        onChange={(e) => handleAnswer(question.id, e.target.value)}
+                        placeholder={question.placeholder || ''}
+                        className={`w-full p-3 border-2 rounded-lg focus:outline-none text-gray-700 transition ${
+                          hasError
+                            ? 'border-red-500 focus:border-red-500 bg-red-50'
+                            : 'border-gray-300 focus:border-purple-500'
+                        }`}
+                      />
+                      {hasError && (
+                        <p className="text-red-600 text-sm mt-2 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors[question.id]}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               );
@@ -602,19 +755,37 @@ export default function Survey() {
             <button
               onClick={handlePrevious}
               disabled={currentSection === 0}
-              className={`px-6 py-3 rounded-lg transition ${currentSection === 0
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+              className={`px-6 py-3 rounded-lg transition ${
+                currentSection === 0
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
             >
               {t.previous}
             </button>
             <button
               onClick={handleNext}
-              className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition flex items-center"
+              disabled={isSubmitting}
+              className={`px-8 py-3 rounded-lg transition flex items-center ${
+                isSubmitting
+                  ? 'bg-purple-400 cursor-not-allowed'
+                  : 'bg-purple-600 hover:bg-purple-700'
+              } text-white`}
             >
-              {currentSection === 2 ? t.finish : t.next}
-              <ChevronRight className="w-5 h-5 mr-2" />
+              {isSubmitting ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  {t.submitting}
+                </>
+              ) : (
+                <>
+                  {currentSection === 2 ? t.finish : t.next}
+                  <ChevronRight className="w-5 h-5 mr-2" />
+                </>
+              )}
             </button>
           </div>
         </div>

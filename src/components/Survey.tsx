@@ -263,12 +263,13 @@ export default function Survey() {
         { id: "legalIssues", q: "هل واجهت مشكلة قانونية في السعودية؟", type: "radio", section: 1, options: ["نعم", "لا"], required: true },
         { id: "mainBarrier", q: "ما أكبر عائق يمنعك من الوصول للخدمات القانونية؟", type: "select", section: 1, options: ["التكلفة العالية", "حاجز اللغة", "عدم معرفة حقوقي", "الخوف من الإجراءات"], required: true },
         { id: "quickDecision", q: "لو وجد حل للاستشارة السريعة بلغتك، هل ستشترك؟", type: "radio", section: 2, options: ["نعم، فوراً", "ربما، أحتاج للتفكير", "لا"], required: true },
-        { id: "giveawayInterest", q: "🎁 هل ترغب بالسحب على هدية مجانية؟", type: "radio", section: 2, options: ["نعم، أرغب", "لا، لا أرغب"], required: true },
-        { id: "email", q: "📧 البريد الإلكتروني (اختياري)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "example@email.com", required: true },
-        { id: "phone", q: "📱 رقم الجوال (اختياري)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "05xxxxxxxx", required: false },
         { id: "legalTechServices", q: "هل جربت اي خدمات تقنيه قانونيه في السعودية؟", type: "radio", section: 2, options: ["نعم", "لا"], required: true },
         { id: "legalTechServiceName", q: "اذكر اسمها", type: "text", section: 2, condition: "legalTechServices", conditionValue: "نعم", placeholder: "اكتب اسم الخدمة...", required: true },
-        { id: "legalTechConsideration", q: "هل تفكر لو توفرت بسعر معقول؟", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "لا", options: ["نعم", "لا"], required: true }
+        { id: "legalTechConsideration", q: "ما هو السعر العادل لك لأستخدام هذه الخدمة؟", type: "select", section: 2, options: ["400-800 SAR", "800-1,500 SAR", "1,500-3,000 SAR", "More than 3,000 SAR"], required: true },
+        { id: "giveawayInterest", q: "🎁 هل ترغب بالسحب على هدية مجانية؟", type: "radio", section: 2, options: ["نعم، أرغب", "لا، لا أرغب"], required: true },
+        { id: "email", q: "📧 البريد الإلكتروني", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 رقم الجوال (اختياري)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "05xxxxxxxx", required: false },
+
       ],
       en: [
         { id: "surveySource", q: "How did you find this survey?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Message from friend", "Twitter/X", "Instagram", "WhatsApp", "Other"], required: true },
@@ -280,14 +281,19 @@ export default function Survey() {
         { id: "legalIssues", q: "Have you faced legal issues in Saudi Arabia?", type: "radio", section: 1, options: ["Yes", "No"], required: true },
         { id: "mainBarrier", q: "What is the biggest barrier to legal services?", type: "select", section: 1, options: ["High cost", "Language barrier", "Don't know my rights", "Fear of procedures"], required: true },
         { id: "quickDecision", q: "If there was a quick consultation solution in your language, would you subscribe?", type: "radio", section: 2, options: ["Yes, immediately", "Maybe, need to think", "No"], required: true },
-        { id: "giveawayInterest", q: "🎁 Would you like to enter a prize draw?", type: "radio", section: 2, options: ["Yes, I would", "No, thanks"], required: true },
-        { id: "email", q: "📧 Email (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "example@email.com", required: true },
-        { id: "phone", q: "📱 Mobile number (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "05xxxxxxxx", required: false },
         { id: "legalTechServices", q: "Have you tried any legal tech services in Saudi Arabia?", type: "radio", section: 2, options: ["Yes", "No"], required: true },
         { id: "legalTechServiceName", q: "Please mention its name", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Yes", placeholder: "Enter service name...", required: true },
-        { id: "legalTechConsideration", q: "Would you consider it if available at a reasonable price?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "No", options: ["Yes", "No"], required: true }
+        {
+          id: "legalTechConsideration",
+          q: "What is a fair price for you to use this service?",
+          type: "select",
+          section: 2,
+          options: ["400–800 SAR", "800–1,500 SAR", "1,500–3,000 SAR", "More than 3,000 SAR"],
+          required: true
+        }, { id: "giveawayInterest", q: "🎁 Would you like to enter a prize draw?", type: "radio", section: 2, options: ["Yes, I would", "No, thanks"], required: true },
+        { id: "email", q: "📧 Email ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 Mobile number (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "05xxxxxxxx", required: false },
       ],
-      // Add other languages similarly...
       tl: [
         { id: "surveySource", q: "Paano mo nahanap ang survey na ito?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Mensahe mula sa kaibigan", "Twitter/X", "Instagram", "WhatsApp", "Iba pa"], required: true },
         { id: "surveySourceOther", q: "Kung pumili ka ng Iba pa, mangyaring tukuyin", type: "text", section: 0, condition: "surveySource", conditionValue: "Iba pa", placeholder: "Isulat dito...", required: true },
@@ -298,127 +304,177 @@ export default function Survey() {
         { id: "legalIssues", q: "Nakaharap ka ba ng legal na problema?", type: "radio", section: 1, options: ["Oo", "Hindi"], required: true },
         { id: "mainBarrier", q: "Ano ang pinakamalaking hadlang?", type: "select", section: 1, options: ["Mataas ang presyo", "Language barrier", "Hindi alam ang rights", "Takot sa proseso"], required: true },
         { id: "quickDecision", q: "Kung may mabilis na solusyon sa iyong wika, mag-subscribe ka ba?", type: "radio", section: 2, options: ["Oo, agad", "Siguro", "Hindi"], required: true },
-        { id: "giveawayInterest", q: "🎁 Sumali sa prize draw?", type: "radio", section: 2, options: ["Oo", "Hindi"], required: true },
-        { id: "email", q: "📧 Email (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "example@email.com", required: true },
-        { id: "phone", q: "📱 Mobile (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "05xxxxxxxx", required: false },
         { id: "legalTechServices", q: "Nakasubukang gumamit ng legal tech services sa Saudi Arabia?", type: "radio", section: 2, options: ["Oo", "Hindi"], required: true },
         { id: "legalTechServiceName", q: "Pakisabi ang pangalan nito", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Oo", placeholder: "Isulat ang pangalan...", required: true },
-        { id: "legalTechConsideration", q: "Isasaalang-alang mo ba kung mura lang?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "Hindi", options: ["Oo", "Hindi"], required: true }
+        {
+          id: "legalTechConsideration",
+          q: "Ano ang patas na presyo para sa iyo upang magamit ang serbisyong ito?",
+          type: "select",
+          section: 2,
+          options: ["400–800 SAR", "800–1,500 SAR", "1,500–3,000 SAR", "Higit sa 3,000 SAR"],
+          required: true
+        }, { id: "giveawayInterest", q: "🎁 Sumali sa prize draw?", type: "radio", section: 2, options: ["Oo", "Hindi"], required: true },
+        { id: "email", q: "📧 Email ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 Mobile (optional)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "05xxxxxxxx", required: false },
+
       ],
-          // === Urdu ===
-    ur: [
-      { id: "surveySource", q: "یہ سروے آپ کو کہاں سے ملا؟", type: "select", section: 0, options: ["فیس بک", "گوگل", "ای میل", "دوست کا پیغام", "ٹوئٹر/X", "انسٹاگرام", "واٹس ایپ", "دیگر"], required: true },
-      { id: "surveySourceOther", q: "اگر آپ نے 'دیگر' منتخب کیا ہے تو وضاحت کریں", type: "text", section: 0, condition: "surveySource", conditionValue: "دیگر", placeholder: "یہاں لکھیں...", required: true },
-      { id: "nationality", q: "آپ کی قومیت کیا ہے؟", type: "select", section: 0, options: ["پاکستانی", "بھارتی", "بنگالی", "افغانی", "دیگر"], required: true },
-      { id: "residenceYears", q: "آپ کتنے سال سے سعودی عرب میں رہ رہے ہیں؟", type: "select", section: 0, options: ["ایک سال سے کم", "1-3 سال", "3-5 سال", "5-10 سال", "10 سال سے زیادہ"], required: true },
-      { id: "age", q: "آپ کی عمر کیا ہے؟", type: "select", section: 0, options: ["18-25 سال", "26-35 سال", "36-45 سال", "46-55 سال", "55 سال سے زیادہ"], required: true },
-      { id: "income", q: "آپ کی ماہانہ آمدنی کتنی ہے؟", type: "select", section: 0, options: ["2,000 ریال سے کم", "2,000-4,000 ریال", "4,000-8,000 ریال", "8,000 ریال سے زیادہ"], required: true },
-      { id: "legalIssues", q: "کیا آپ کو کبھی سعودی عرب میں قانونی مسئلہ پیش آیا؟", type: "radio", section: 1, options: ["ہاں", "نہیں"], required: true },
-      { id: "mainBarrier", q: "قانونی خدمات حاصل کرنے میں سب سے بڑی رکاوٹ کیا ہے؟", type: "select", section: 1, options: ["زیادہ خرچ", "زبان کی رکاوٹ", "حقوق کی لاعلمی", "عملی خوف"], required: true },
-      { id: "quickDecision", q: "اگر آپ کی زبان میں فوری قانونی مشورہ دستیاب ہو تو کیا آپ استعمال کریں گے؟", type: "radio", section: 2, options: ["ہاں، فوراً", "شاید", "نہیں"], required: true },
-      { id: "giveawayInterest", q: "🎁 کیا آپ انعامی قرعہ اندازی میں حصہ لینا چاہتے ہیں؟", type: "radio", section: 2, options: ["ہاں", "نہیں"], required: true },
-      { id: "email", q: "📧 ای میل (اختیاری)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "ہاں", placeholder: "example@email.com", required: true },
-      { id: "phone", q: "📱 موبائل نمبر (اختیاری)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "ہاں", placeholder: "05xxxxxxxx", required: false },
-      { id: "legalTechServices", q: "کیا آپ نے سعودی عرب میں کوئی قانونی ٹیک سروس استعمال کی ہے؟", type: "radio", section: 2, options: ["ہاں", "نہیں"], required: true },
-      { id: "legalTechServiceName", q: "اس سروس کا نام بتائیں", type: "text", section: 2, condition: "legalTechServices", conditionValue: "ہاں", placeholder: "سروس کا نام درج کریں...", required: true },
-      { id: "legalTechConsideration", q: "اگر مناسب قیمت پر دستیاب ہو تو کیا آپ استعمال کریں گے؟", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "نہیں", options: ["ہاں", "نہیں"], required: true }
-    ],
+      // === Urdu ===
+      ur: [
+        { id: "surveySource", q: "یہ سروے آپ کو کہاں سے ملا؟", type: "select", section: 0, options: ["فیس بک", "گوگل", "ای میل", "دوست کا پیغام", "ٹوئٹر/X", "انسٹاگرام", "واٹس ایپ", "دیگر"], required: true },
+        { id: "surveySourceOther", q: "اگر آپ نے 'دیگر' منتخب کیا ہے تو وضاحت کریں", type: "text", section: 0, condition: "surveySource", conditionValue: "دیگر", placeholder: "یہاں لکھیں...", required: true },
+        { id: "nationality", q: "آپ کی قومیت کیا ہے؟", type: "select", section: 0, options: ["پاکستانی", "بھارتی", "بنگالی", "افغانی", "دیگر"], required: true },
+        { id: "residenceYears", q: "آپ کتنے سال سے سعودی عرب میں رہ رہے ہیں؟", type: "select", section: 0, options: ["ایک سال سے کم", "1-3 سال", "3-5 سال", "5-10 سال", "10 سال سے زیادہ"], required: true },
+        { id: "age", q: "آپ کی عمر کیا ہے؟", type: "select", section: 0, options: ["18-25 سال", "26-35 سال", "36-45 سال", "46-55 سال", "55 سال سے زیادہ"], required: true },
+        { id: "income", q: "آپ کی ماہانہ آمدنی کتنی ہے؟", type: "select", section: 0, options: ["2,000 ریال سے کم", "2,000-4,000 ریال", "4,000-8,000 ریال", "8,000 ریال سے زیادہ"], required: true },
+        { id: "legalIssues", q: "کیا آپ کو کبھی سعودی عرب میں قانونی مسئلہ پیش آیا؟", type: "radio", section: 1, options: ["ہاں", "نہیں"], required: true },
+        { id: "mainBarrier", q: "قانونی خدمات حاصل کرنے میں سب سے بڑی رکاوٹ کیا ہے؟", type: "select", section: 1, options: ["زیادہ خرچ", "زبان کی رکاوٹ", "حقوق کی لاعلمی", "عملی خوف"], required: true },
+        { id: "quickDecision", q: "اگر آپ کی زبان میں فوری قانونی مشورہ دستیاب ہو تو کیا آپ استعمال کریں گے؟", type: "radio", section: 2, options: ["ہاں، فوراً", "شاید", "نہیں"], required: true },
+        { id: "legalTechServices", q: "کیا آپ نے سعودی عرب میں کوئی قانونی ٹیک سروس استعمال کی ہے؟", type: "radio", section: 2, options: ["ہاں", "نہیں"], required: true },
+        { id: "legalTechServiceName", q: "اس سروس کا نام بتائیں", type: "text", section: 2, condition: "legalTechServices", conditionValue: "ہاں", placeholder: "سروس کا نام درج کریں...", required: true },
+        {
+          id: "legalTechConsideration",
+          q: "اس سروس کو استعمال کرنے کے لیے آپ کے لیے مناسب قیمت کیا ہوگی؟",
+          type: "select",
+          section: 2,
+          options: ["400–800 ریال", "800–1,500 ریال", "1,500–3,000 ریال", "3,000 ریال سے زیادہ"],
+          required: true
+        }, { id: "giveawayInterest", q: "🎁 کیا آپ انعامی قرعہ اندازی میں حصہ لینا چاہتے ہیں؟", type: "radio", section: 2, options: ["ہاں", "نہیں"], required: true },
+        { id: "email", q: "📧 ای میل ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "ہاں", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 موبائل نمبر (اختیاری)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "ہاں", placeholder: "05xxxxxxxx", required: false },
 
-    // === Bengali ===
-    bn: [
-      { id: "surveySource", q: "আপনি কোথা থেকে এই সার্ভেটি পেয়েছেন?", type: "select", section: 0, options: ["ফেসবুক", "গুগল", "ইমেইল", "বন্ধুর বার্তা", "টুইটার/X", "ইনস্টাগ্রাম", "হোয়াটসঅ্যাপ", "অন্যান্য"], required: true },
-      { id: "surveySourceOther", q: "যদি 'অন্যান্য' নির্বাচন করেন, অনুগ্রহ করে উল্লেখ করুন", type: "text", section: 0, condition: "surveySource", conditionValue: "অন্যান্য", placeholder: "এখানে লিখুন...", required: true },
-      { id: "nationality", q: "আপনার জাতীয়তা কী?", type: "select", section: 0, options: ["বাংলাদেশি", "ভারতীয়", "পাকিস্তানি", "অন্যান্য"], required: true },
-      { id: "residenceYears", q: "আপনি কত বছর ধরে সৌদি আরবে আছেন?", type: "select", section: 0, options: ["১ বছরের কম", "১-৩ বছর", "৩-৫ বছর", "৫-১০ বছর", "১০ বছরের বেশি"], required: true },
-      { id: "age", q: "আপনার বয়স কত?", type: "select", section: 0, options: ["১৮-২৫", "২৬-৩৫", "৩৬-৪৫", "৪৬-৫৫", "৫৫ এর বেশি"], required: true },
-      { id: "income", q: "আপনার মাসিক আয় কত?", type: "select", section: 0, options: ["২০০০ রিয়ালের কম", "২০০০-৪০০০", "৪০০০-৮০০০", "৮০০০ এর বেশি"], required: true },
-      { id: "legalIssues", q: "আপনি কি কখনও সৌদি আরবে কোনো আইনি সমস্যায় পড়েছেন?", type: "radio", section: 1, options: ["হ্যাঁ", "না"], required: true },
-      { id: "mainBarrier", q: "আইনি পরিষেবায় সবচেয়ে বড় বাধা কী?", type: "select", section: 1, options: ["উচ্চ খরচ", "ভাষাগত বাধা", "অধিকার সম্পর্কে অজ্ঞতা", "প্রক্রিয়ার ভয়"], required: true },
-      { id: "quickDecision", q: "যদি আপনার ভাষায় দ্রুত পরামর্শ পাওয়া যায়, আপনি কি ব্যবহার করবেন?", type: "radio", section: 2, options: ["হ্যাঁ, অবশ্যই", "সম্ভবত", "না"], required: true },
-      { id: "giveawayInterest", q: "🎁 আপনি কি উপহার ড্র-এ অংশ নিতে চান?", type: "radio", section: 2, options: ["হ্যাঁ", "না"], required: true },
-      { id: "email", q: "📧 ইমেইল (ঐচ্ছিক)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "হ্যাঁ", placeholder: "example@email.com", required: true },
-      { id: "phone", q: "📱 মোবাইল নম্বর (ঐচ্ছিক)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "হ্যাঁ", placeholder: "05xxxxxxxx", required: false },
-      { id: "legalTechServices", q: "আপনি কি সৌদি আরবে কোনো আইনি টেক সেবা ব্যবহার করেছেন?", type: "radio", section: 2, options: ["হ্যাঁ", "না"], required: true },
-      { id: "legalTechServiceName", q: "সেবাটির নাম উল্লেখ করুন", type: "text", section: 2, condition: "legalTechServices", conditionValue: "হ্যাঁ", placeholder: "সেবার নাম লিখুন...", required: true },
-      { id: "legalTechConsideration", q: "যদি সাশ্রয়ী মূল্যে পাওয়া যায়, আপনি কি বিবেচনা করবেন?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "না", options: ["হ্যাঁ", "না"], required: true }
-    ],
+      ],
 
-    // === Malay ===
-    ms: [
-      { id: "surveySource", q: "Dari mana anda dapat tinjauan ini?", type: "select", section: 0, options: ["Facebook", "Google", "Emel", "Mesej dari rakan", "Twitter/X", "Instagram", "WhatsApp", "Lain-lain"], required: true },
-      { id: "surveySourceOther", q: "Jika anda pilih Lain-lain, sila nyatakan", type: "text", section: 0, condition: "surveySource", conditionValue: "Lain-lain", placeholder: "Tulis di sini...", required: true },
-      { id: "nationality", q: "Apa kewarganegaraan anda?", type: "select", section: 0, options: ["Malaysia", "Indonesia", "Filipina", "Pakistan", "Lain-lain"], required: true },
-      { id: "residenceYears", q: "Berapa lama anda telah tinggal di Arab Saudi?", type: "select", section: 0, options: ["Kurang dari 1 tahun", "1-3 tahun", "3-5 tahun", "5-10 tahun", "Lebih 10 tahun"], required: true },
-      { id: "age", q: "Berapakah umur anda?", type: "select", section: 0, options: ["18-25 tahun", "26-35 tahun", "36-45 tahun", "46-55 tahun", "Lebih 55 tahun"], required: true },
-      { id: "income", q: "Berapakah pendapatan bulanan anda?", type: "select", section: 0, options: ["Kurang 2,000 SAR", "2,000-4,000 SAR", "4,000-8,000 SAR", "Lebih 8,000 SAR"], required: true },
-      { id: "legalIssues", q: "Pernahkah anda menghadapi isu undang-undang di Arab Saudi?", type: "radio", section: 1, options: ["Ya", "Tidak"], required: true },
-      { id: "mainBarrier", q: "Apakah halangan terbesar untuk perkhidmatan undang-undang?", type: "select", section: 1, options: ["Kos tinggi", "Masalah bahasa", "Tidak tahu hak sendiri", "Takut pada prosedur"], required: true },
-      { id: "quickDecision", q: "Jika ada khidmat rundingan pantas dalam bahasa anda, adakah anda akan melanggan?", type: "radio", section: 2, options: ["Ya, segera", "Mungkin", "Tidak"], required: true },
-      { id: "giveawayInterest", q: "🎁 Adakah anda mahu sertai cabutan bertuah?", type: "radio", section: 2, options: ["Ya", "Tidak"], required: true },
-      { id: "email", q: "📧 Emel (pilihan)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Ya", placeholder: "example@email.com", required: true },
-      { id: "phone", q: "📱 Nombor telefon (pilihan)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Ya", placeholder: "05xxxxxxxx", required: false },
-      { id: "legalTechServices", q: "Pernah cuba perkhidmatan teknologi undang-undang di Arab Saudi?", type: "radio", section: 2, options: ["Ya", "Tidak"], required: true },
-      { id: "legalTechServiceName", q: "Nyatakan nama perkhidmatan tersebut", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Ya", placeholder: "Masukkan nama...", required: true },
-      { id: "legalTechConsideration", q: "Adakah anda akan pertimbangkan jika harga berpatutan?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "Tidak", options: ["Ya", "Tidak"], required: true }
-    ],
+      // === Bengali ===
+      bn: [
+        { id: "surveySource", q: "আপনি কোথা থেকে এই সার্ভেটি পেয়েছেন?", type: "select", section: 0, options: ["ফেসবুক", "গুগল", "ইমেইল", "বন্ধুর বার্তা", "টুইটার/X", "ইনস্টাগ্রাম", "হোয়াটসঅ্যাপ", "অন্যান্য"], required: true },
+        { id: "surveySourceOther", q: "যদি 'অন্যান্য' নির্বাচন করেন, অনুগ্রহ করে উল্লেখ করুন", type: "text", section: 0, condition: "surveySource", conditionValue: "অন্যান্য", placeholder: "এখানে লিখুন...", required: true },
+        { id: "nationality", q: "আপনার জাতীয়তা কী?", type: "select", section: 0, options: ["বাংলাদেশি", "ভারতীয়", "পাকিস্তানি", "অন্যান্য"], required: true },
+        { id: "residenceYears", q: "আপনি কত বছর ধরে সৌদি আরবে আছেন?", type: "select", section: 0, options: ["১ বছরের কম", "১-৩ বছর", "৩-৫ বছর", "৫-১০ বছর", "১০ বছরের বেশি"], required: true },
+        { id: "age", q: "আপনার বয়স কত?", type: "select", section: 0, options: ["১৮-২৫", "২৬-৩৫", "৩৬-৪৫", "৪৬-৫৫", "৫৫ এর বেশি"], required: true },
+        { id: "income", q: "আপনার মাসিক আয় কত?", type: "select", section: 0, options: ["২০০০ রিয়ালের কম", "২০০০-৪০০০", "৪০০০-৮০০০", "৮০০০ এর বেশি"], required: true },
+        { id: "legalIssues", q: "আপনি কি কখনও সৌদি আরবে কোনো আইনি সমস্যায় পড়েছেন?", type: "radio", section: 1, options: ["হ্যাঁ", "না"], required: true },
+        { id: "mainBarrier", q: "আইনি পরিষেবায় সবচেয়ে বড় বাধা কী?", type: "select", section: 1, options: ["উচ্চ খরচ", "ভাষাগত বাধা", "অধিকার সম্পর্কে অজ্ঞতা", "প্রক্রিয়ার ভয়"], required: true },
+        { id: "quickDecision", q: "যদি আপনার ভাষায় দ্রুত পরামর্শ পাওয়া যায়, আপনি কি ব্যবহার করবেন?", type: "radio", section: 2, options: ["হ্যাঁ, অবশ্যই", "সম্ভবত", "না"], required: true },
+        { id: "legalTechServices", q: "আপনি কি সৌদি আরবে কোনো আইনি টেক সেবা ব্যবহার করেছেন?", type: "radio", section: 2, options: ["হ্যাঁ", "না"], required: true },
+        { id: "legalTechServiceName", q: "সেবাটির নাম উল্লেখ করুন", type: "text", section: 2, condition: "legalTechServices", conditionValue: "হ্যাঁ", placeholder: "সেবার নাম লিখুন...", required: true },
+        {
+          id: "legalTechConsideration",
+          q: "এই সেবা ব্যবহারের জন্য আপনার কাছে কোন মূল্যটি ন্যায্য মনে হয়?",
+          type: "select",
+          section: 2,
+          options: ["৪০০–৮০০ রিয়াল", "৮০০–১,৫০০ রিয়াল", "১,৫০০–৩,০০০ রিয়াল", "৩,০০০ রিয়ালের বেশি"],
+          required: true
+        }, { id: "giveawayInterest", q: "🎁 আপনি কি উপহার ড্র-এ অংশ নিতে চান?", type: "radio", section: 2, options: ["হ্যাঁ", "না"], required: true },
+        { id: "email", q: "📧 ইমেইল ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "হ্যাঁ", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 মোবাইল নম্বর (ঐচ্ছিক)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "হ্যাঁ", placeholder: "05xxxxxxxx", required: false },
 
-    // === Chinese (Simplified) ===
-    zh: [
-      { id: "surveySource", q: "您是从哪里知道这个问卷的？", type: "select", section: 0, options: ["Facebook", "Google", "电子邮件", "朋友消息", "Twitter/X", "Instagram", "WhatsApp", "其他"], required: true },
-      { id: "surveySourceOther", q: "如果选择“其他”，请说明", type: "text", section: 0, condition: "surveySource", conditionValue: "其他", placeholder: "请在此填写...", required: true },
-      { id: "nationality", q: "您的国籍是什么？", type: "text", section: 0, placeholder: "例如：中国、菲律宾、印度等", required: true },
-      { id: "residenceYears", q: "您在沙特阿拉伯居住多久了？", type: "select", section: 0, options: ["少于1年", "1-3年", "3-5年", "5-10年", "超过10年"], required: true },
-      { id: "age", q: "您的年龄？", type: "select", section: 0, options: ["18-25岁", "26-35岁", "36-45岁", "46-55岁", "55岁以上"], required: true },
-      { id: "income", q: "您的月收入是多少？", type: "select", section: 0, options: ["少于2,000里亚尔", "2,000-4,000里亚尔", "4,000-8,000里亚尔", "超过8,000里亚尔"], required: true },
-      { id: "legalIssues", q: "您是否在沙特阿拉伯遇到过法律问题？", type: "radio", section: 1, options: ["是", "否"], required: true },
-      { id: "mainBarrier", q: "您认为获取法律服务的最大障碍是什么？", type: "select", section: 1, options: ["费用高", "语言障碍", "不了解自己的权利", "害怕流程"], required: true },
-      { id: "quickDecision", q: "如果有您语言的快速法律咨询，您会使用吗？", type: "radio", section: 2, options: ["会，马上使用", "可能会", "不会"], required: true },
-      { id: "giveawayInterest", q: "🎁 您想参加抽奖吗？", type: "radio", section: 2, options: ["想", "不想"], required: true },
-      { id: "email", q: "📧 邮箱（可选）", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "想", placeholder: "example@email.com", required: true },
-      { id: "phone", q: "📱 手机号码（可选）", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "想", placeholder: "05xxxxxxxx", required: false },
-      { id: "legalTechServices", q: "您是否使用过沙特的法律科技服务？", type: "radio", section: 2, options: ["是", "否"], required: true },
-      { id: "legalTechServiceName", q: "请填写服务名称", type: "text", section: 2, condition: "legalTechServices", conditionValue: "是", placeholder: "输入服务名称...", required: true },
-      { id: "legalTechConsideration", q: "如果价格合理，您会考虑使用吗？", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "否", options: ["会", "不会"], required: true }
-    ],
+      ],
 
-    // === Somali ===
-    so: [
-      { id: "surveySource", q: "Sidee ku heshay sahankan?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Fariin saaxiib", "Twitter/X", "Instagram", "WhatsApp", "Kale"], required: true },
-      { id: "surveySourceOther", q: "Haddii aad dooratay 'Kale', fadlan faahfaahi", type: "text", section: 0, condition: "surveySource", conditionValue: "Kale", placeholder: "Qor halkan...", required: true },
-      { id: "nationality", q: "Waa maxay jinsiyaddaada?", type: "select", section: 0, options: ["Soomaali", "Itoobiyaan", "Eritrean", "Sudaani", "Kale"], required: true },
-      { id: "residenceYears", q: "Intee sano ayaad ku nooshahay Sacuudiga?", type: "select", section: 0, options: ["Ka yar 1 sano", "1-3 sano", "3-5 sano", "5-10 sano", "Ka badan 10 sano"], required: true },
-      { id: "age", q: "Da'daada intee le’eg tahay?", type: "select", section: 0, options: ["18-25", "26-35", "36-45", "46-55", "Ka badan 55"], required: true },
-      { id: "income", q: "Waa imisa dakhligaaga bishii?", type: "select", section: 0, options: ["Ka yar 2,000 SAR", "2,000-4,000", "4,000-8,000", "Ka badan 8,000"], required: true },
-      { id: "legalIssues", q: "Miyaad la kulantay dhibaato sharci ah Sacuudiga?", type: "radio", section: 1, options: ["Haa", "Maya"], required: true },
-      { id: "mainBarrier", q: "Maxay tahay caqabadda ugu weyn ee aad kala kulanto adeegyada sharciga?", type: "select", section: 1, options: ["Qiimaha sare", "Caafimaad luqadeed", "Garasho la’aan xuquuqda", "Cabsi nidaamka"], required: true },
-      { id: "quickDecision", q: "Haddii adeeg sharci oo degdeg ah lagu bixiyo afkaaga, ma isticmaali lahayd?", type: "radio", section: 2, options: ["Haa", "Malaha", "Maya"], required: true },
-      { id: "giveawayInterest", q: "🎁 Ma rabtaa inaad ka qayb gasho hadiyadda?", type: "radio", section: 2, options: ["Haa", "Maya"], required: true },
-      { id: "email", q: "📧 Email (ikhtiyaari ah)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Haa", placeholder: "example@email.com", required: true },
-      { id: "phone", q: "📱 Nambarka taleefanka (ikhtiyaari ah)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Haa", placeholder: "05xxxxxxxx", required: false },
-      { id: "legalTechServices", q: "Miyaad isticmaashay adeegyo sharci oo teknolojiyad ku saleysan Sacuudiga?", type: "radio", section: 2, options: ["Haa", "Maya"], required: true },
-      { id: "legalTechServiceName", q: "Magaca adeegga sheeg", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Haa", placeholder: "Qor magaca...", required: true },
-      { id: "legalTechConsideration", q: "Haddii qiimuhu uu jaban yahay, ma tixgelin lahayd?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "Maya", options: ["Haa", "Maya"], required: true }
-    ],
+      // === Malay ===
+      ms: [
+        { id: "surveySource", q: "Dari mana anda dapat tinjauan ini?", type: "select", section: 0, options: ["Facebook", "Google", "Emel", "Mesej dari rakan", "Twitter/X", "Instagram", "WhatsApp", "Lain-lain"], required: true },
+        { id: "surveySourceOther", q: "Jika anda pilih Lain-lain, sila nyatakan", type: "text", section: 0, condition: "surveySource", conditionValue: "Lain-lain", placeholder: "Tulis di sini...", required: true },
+        { id: "nationality", q: "Apa kewarganegaraan anda?", type: "select", section: 0, options: ["Malaysia", "Indonesia", "Filipina", "Pakistan", "Lain-lain"], required: true },
+        { id: "residenceYears", q: "Berapa lama anda telah tinggal di Arab Saudi?", type: "select", section: 0, options: ["Kurang dari 1 tahun", "1-3 tahun", "3-5 tahun", "5-10 tahun", "Lebih 10 tahun"], required: true },
+        { id: "age", q: "Berapakah umur anda?", type: "select", section: 0, options: ["18-25 tahun", "26-35 tahun", "36-45 tahun", "46-55 tahun", "Lebih 55 tahun"], required: true },
+        { id: "income", q: "Berapakah pendapatan bulanan anda?", type: "select", section: 0, options: ["Kurang 2,000 SAR", "2,000-4,000 SAR", "4,000-8,000 SAR", "Lebih 8,000 SAR"], required: true },
+        { id: "legalIssues", q: "Pernahkah anda menghadapi isu undang-undang di Arab Saudi?", type: "radio", section: 1, options: ["Ya", "Tidak"], required: true },
+        { id: "mainBarrier", q: "Apakah halangan terbesar untuk perkhidmatan undang-undang?", type: "select", section: 1, options: ["Kos tinggi", "Masalah bahasa", "Tidak tahu hak sendiri", "Takut pada prosedur"], required: true },
+        { id: "quickDecision", q: "Jika ada khidmat rundingan pantas dalam bahasa anda, adakah anda akan melanggan?", type: "radio", section: 2, options: ["Ya, segera", "Mungkin", "Tidak"], required: true },
+        { id: "legalTechServices", q: "Pernah cuba perkhidmatan teknologi undang-undang di Arab Saudi?", type: "radio", section: 2, options: ["Ya", "Tidak"], required: true },
+        { id: "legalTechServiceName", q: "Nyatakan nama perkhidmatan tersebut", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Ya", placeholder: "Masukkan nama...", required: true },
+        {
+          id: "legalTechConsideration",
+          q: "Berapakah harga yang adil bagi anda untuk menggunakan perkhidmatan ini?",
+          type: "select",
+          section: 2,
+          options: ["400–800 SAR", "800–1,500 SAR", "1,500–3,000 SAR", "Lebih daripada 3,000 SAR"],
+          required: true
+        }, { id: "giveawayInterest", q: "🎁 Adakah anda mahu sertai cabutan bertuah?", type: "radio", section: 2, options: ["Ya", "Tidak"], required: true },
+        { id: "email", q: "📧 Emel ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Ya", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 Nombor telefon (pilihan)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Ya", placeholder: "05xxxxxxxx", required: false },
 
-    // === Hindi ===
-    hi: [
-      { id: "surveySource", q: "आपको यह सर्वे कहाँ से मिला?", type: "select", section: 0, options: ["फेसबुक", "गूगल", "ईमेल", "दोस्त से संदेश", "ट्विटर/X", "इंस्टाग्राम", "व्हाट्सएप", "अन्य"], required: true },
-      { id: "surveySourceOther", q: "अगर आपने 'अन्य' चुना है, कृपया बताएं", type: "text", section: 0, condition: "surveySource", conditionValue: "अन्य", placeholder: "यहाँ लिखें...", required: true },
-      { id: "nationality", q: "आपकी राष्ट्रीयता क्या है?", type: "select", section: 0, options: ["भारतीय", "पाकिस्तानी", "बांग्लादेशी", "नेपाली", "अन्य"], required: true },
-      { id: "residenceYears", q: "आप सऊदी अरब में कितने साल से रह रहे हैं?", type: "select", section: 0, options: ["1 साल से कम", "1-3 साल", "3-5 साल", "5-10 साल", "10 साल से अधिक"], required: true },
-      { id: "age", q: "आपकी उम्र क्या है?", type: "select", section: 0, options: ["18-25", "26-35", "36-45", "46-55", "55 से अधिक"], required: true },
-      { id: "income", q: "आपकी मासिक आय क्या है?", type: "select", section: 0, options: ["2000 रियाल से कम", "2000-4000", "4000-8000", "8000 से अधिक"], required: true },
-      { id: "legalIssues", q: "क्या आपको कभी सऊदी अरब में कानूनी समस्या हुई है?", type: "radio", section: 1, options: ["हाँ", "नहीं"], required: true },
-      { id: "mainBarrier", q: "कानूनी सेवाओं में सबसे बड़ी बाधा क्या है?", type: "select", section: 1, options: ["उच्च लागत", "भाषा की बाधा", "अधिकारों की जानकारी नहीं", "प्रक्रिया का डर"], required: true },
-      { id: "quickDecision", q: "अगर आपकी भाषा में त्वरित सलाह सेवा मिले, तो क्या आप उपयोग करेंगे?", type: "radio", section: 2, options: ["हाँ, तुरंत", "शायद", "नहीं"], required: true },
-      { id: "giveawayInterest", q: "🎁 क्या आप उपहार ड्रा में भाग लेना चाहते हैं?", type: "radio", section: 2, options: ["हाँ", "नहीं"], required: true },
-      { id: "email", q: "📧 ईमेल (वैकल्पिक)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "हाँ", placeholder: "example@email.com", required: true },
-      { id: "phone", q: "📱 मोबाइल नंबर (वैकल्पिक)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "हाँ", placeholder: "05xxxxxxxx", required: false },
-      { id: "legalTechServices", q: "क्या आपने सऊदी अरब में कोई लीगल टेक सेवा इस्तेमाल की है?", type: "radio", section: 2, options: ["हाँ", "नहीं"], required: true },
-      { id: "legalTechServiceName", q: "उस सेवा का नाम बताएं", type: "text", section: 2, condition: "legalTechServices", conditionValue: "हाँ", placeholder: "सेवा का नाम लिखें...", required: true },
-      { id: "legalTechConsideration", q: "अगर यह उचित मूल्य पर उपलब्ध हो तो क्या आप विचार करेंगे?", type: "radio", section: 2, condition: "legalTechServices", conditionValue: "नहीं", options: ["हाँ", "नहीं"], required: true }
-    ]
-  };
+      ],
+
+      // === Chinese (Simplified) ===
+      zh: [
+        { id: "surveySource", q: "您是从哪里知道这个问卷的？", type: "select", section: 0, options: ["Facebook", "Google", "电子邮件", "朋友消息", "Twitter/X", "Instagram", "WhatsApp", "其他"], required: true },
+        { id: "surveySourceOther", q: "如果选择“其他”，请说明", type: "text", section: 0, condition: "surveySource", conditionValue: "其他", placeholder: "请在此填写...", required: true },
+        { id: "nationality", q: "您的国籍是什么？", type: "text", section: 0, placeholder: "例如：中国、菲律宾、印度等", required: true },
+        { id: "residenceYears", q: "您在沙特阿拉伯居住多久了？", type: "select", section: 0, options: ["少于1年", "1-3年", "3-5年", "5-10年", "超过10年"], required: true },
+        { id: "age", q: "您的年龄？", type: "select", section: 0, options: ["18-25岁", "26-35岁", "36-45岁", "46-55岁", "55岁以上"], required: true },
+        { id: "income", q: "您的月收入是多少？", type: "select", section: 0, options: ["少于2,000里亚尔", "2,000-4,000里亚尔", "4,000-8,000里亚尔", "超过8,000里亚尔"], required: true },
+        { id: "legalIssues", q: "您是否在沙特阿拉伯遇到过法律问题？", type: "radio", section: 1, options: ["是", "否"], required: true },
+        { id: "mainBarrier", q: "您认为获取法律服务的最大障碍是什么？", type: "select", section: 1, options: ["费用高", "语言障碍", "不了解自己的权利", "害怕流程"], required: true },
+        { id: "quickDecision", q: "如果有您语言的快速法律咨询，您会使用吗？", type: "radio", section: 2, options: ["会，马上使用", "可能会", "不会"], required: true },
+        { id: "legalTechServices", q: "您是否使用过沙特的法律科技服务？", type: "radio", section: 2, options: ["是", "否"], required: true },
+        { id: "legalTechServiceName", q: "请填写服务名称", type: "text", section: 2, condition: "legalTechServices", conditionValue: "是", placeholder: "输入服务名称...", required: true },
+        {
+          id: "legalTechConsideration",
+          q: "您认为使用此服务的合理价格是多少？",
+          type: "select",
+          section: 2,
+          options: ["400–800 里亚尔", "800–1,500 里亚尔", "1,500–3,000 里亚尔", "超过 3,000 里亚尔"],
+          required: true
+        }, { id: "giveawayInterest", q: "🎁 您想参加抽奖吗？", type: "radio", section: 2, options: ["想", "不想"], required: true },
+        { id: "email", q: "📧 邮箱", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "想", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 手机号码（可选）", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "想", placeholder: "05xxxxxxxx", required: false },
+
+      ],
+
+      // === Somali ===
+      so: [
+        { id: "surveySource", q: "Sidee ku heshay sahankan?", type: "select", section: 0, options: ["Facebook", "Google", "Email", "Fariin saaxiib", "Twitter/X", "Instagram", "WhatsApp", "Kale"], required: true },
+        { id: "surveySourceOther", q: "Haddii aad dooratay 'Kale', fadlan faahfaahi", type: "text", section: 0, condition: "surveySource", conditionValue: "Kale", placeholder: "Qor halkan...", required: true },
+        { id: "nationality", q: "Waa maxay jinsiyaddaada?", type: "select", section: 0, options: ["Soomaali", "Itoobiyaan", "Eritrean", "Sudaani", "Kale"], required: true },
+        { id: "residenceYears", q: "Intee sano ayaad ku nooshahay Sacuudiga?", type: "select", section: 0, options: ["Ka yar 1 sano", "1-3 sano", "3-5 sano", "5-10 sano", "Ka badan 10 sano"], required: true },
+        { id: "age", q: "Da'daada intee le’eg tahay?", type: "select", section: 0, options: ["18-25", "26-35", "36-45", "46-55", "Ka badan 55"], required: true },
+        { id: "income", q: "Waa imisa dakhligaaga bishii?", type: "select", section: 0, options: ["Ka yar 2,000 SAR", "2,000-4,000", "4,000-8,000", "Ka badan 8,000"], required: true },
+        { id: "legalIssues", q: "Miyaad la kulantay dhibaato sharci ah Sacuudiga?", type: "radio", section: 1, options: ["Haa", "Maya"], required: true },
+        { id: "mainBarrier", q: "Maxay tahay caqabadda ugu weyn ee aad kala kulanto adeegyada sharciga?", type: "select", section: 1, options: ["Qiimaha sare", "Caafimaad luqadeed", "Garasho la’aan xuquuqda", "Cabsi nidaamka"], required: true },
+        { id: "quickDecision", q: "Haddii adeeg sharci oo degdeg ah lagu bixiyo afkaaga, ma isticmaali lahayd?", type: "radio", section: 2, options: ["Haa", "Malaha", "Maya"], required: true },
+        { id: "legalTechServices", q: "Miyaad isticmaashay adeegyo sharci oo teknolojiyad ku saleysan Sacuudiga?", type: "radio", section: 2, options: ["Haa", "Maya"], required: true },
+        { id: "legalTechServiceName", q: "Magaca adeegga sheeg", type: "text", section: 2, condition: "legalTechServices", conditionValue: "Haa", placeholder: "Qor magaca...", required: true },
+        {
+          id: "legalTechConsideration",
+          q: "Waa maxay qiimaha cadaaladda ah ee aad u aragto isticmaalka adeeggan?",
+          type: "select",
+          section: 2,
+          options: ["400–800 SAR", "800–1,500 SAR", "1,500–3,000 SAR", "Ka badan 3,000 SAR"],
+          required: true
+        }, { id: "giveawayInterest", q: "🎁 Ma rabtaa inaad ka qayb gasho hadiyadda?", type: "radio", section: 2, options: ["Haa", "Maya"], required: true },
+        { id: "email", q: "📧 Email ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Haa", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 Nambarka taleefanka (ikhtiyaari ah)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Haa", placeholder: "05xxxxxxxx", required: false },
+
+      ],
+
+      // === Hindi ===
+      hi: [
+        { id: "surveySource", q: "आपको यह सर्वे कहाँ से मिला?", type: "select", section: 0, options: ["फेसबुक", "गूगल", "ईमेल", "दोस्त से संदेश", "ट्विटर/X", "इंस्टाग्राम", "व्हाट्सएप", "अन्य"], required: true },
+        { id: "surveySourceOther", q: "अगर आपने 'अन्य' चुना है, कृपया बताएं", type: "text", section: 0, condition: "surveySource", conditionValue: "अन्य", placeholder: "यहाँ लिखें...", required: true },
+        { id: "nationality", q: "आपकी राष्ट्रीयता क्या है?", type: "select", section: 0, options: ["भारतीय", "पाकिस्तानी", "बांग्लादेशी", "नेपाली", "अन्य"], required: true },
+        { id: "residenceYears", q: "आप सऊदी अरब में कितने साल से रह रहे हैं?", type: "select", section: 0, options: ["1 साल से कम", "1-3 साल", "3-5 साल", "5-10 साल", "10 साल से अधिक"], required: true },
+        { id: "age", q: "आपकी उम्र क्या है?", type: "select", section: 0, options: ["18-25", "26-35", "36-45", "46-55", "55 से अधिक"], required: true },
+        { id: "income", q: "आपकी मासिक आय क्या है?", type: "select", section: 0, options: ["2000 रियाल से कम", "2000-4000", "4000-8000", "8000 से अधिक"], required: true },
+        { id: "legalIssues", q: "क्या आपको कभी सऊदी अरब में कानूनी समस्या हुई है?", type: "radio", section: 1, options: ["हाँ", "नहीं"], required: true },
+        { id: "mainBarrier", q: "कानूनी सेवाओं में सबसे बड़ी बाधा क्या है?", type: "select", section: 1, options: ["उच्च लागत", "भाषा की बाधा", "अधिकारों की जानकारी नहीं", "प्रक्रिया का डर"], required: true },
+        { id: "quickDecision", q: "अगर आपकी भाषा में त्वरित सलाह सेवा मिले, तो क्या आप उपयोग करेंगे?", type: "radio", section: 2, options: ["हाँ, तुरंत", "शायद", "नहीं"], required: true },
+        { id: "legalTechServices", q: "क्या आपने सऊदी अरब में कोई लीगल टेक सेवा इस्तेमाल की है?", type: "radio", section: 2, options: ["हाँ", "नहीं"], required: true },
+        { id: "legalTechServiceName", q: "उस सेवा का नाम बताएं", type: "text", section: 2, condition: "legalTechServices", conditionValue: "हाँ", placeholder: "सेवा का नाम लिखें...", required: true },
+        {
+          id: "legalTechConsideration",
+          q: "इस सेवा का उपयोग करने के लिए आपके अनुसार उचित मूल्य क्या होगा?",
+          type: "select",
+          section: 2,
+          options: ["400–800 सऊदी रियाल", "800–1,500 सऊदी रियाल", "1,500–3,000 सऊदी रियाल", "3,000 सऊदी रियाल से अधिक"],
+          required: true
+        },
+        { id: "giveawayInterest", q: "🎁 क्या आप उपहार ड्रा में भाग लेना चाहते हैं?", type: "radio", section: 2, options: ["हाँ", "नहीं"], required: true },
+        { id: "email", q: "📧 ईमेल ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "हाँ", placeholder: "example@email.com", required: true },
+        { id: "phone", q: "📱 मोबाइल नंबर (वैकल्पिक)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "हाँ", placeholder: "05xxxxxxxx", required: false },
+
+      ]
+    };
 
     return questionSets[lang] || questionSets.en;
   };
@@ -426,7 +482,7 @@ export default function Survey() {
   const t = selectedLanguage ? translations[selectedLanguage] : translations.en;
   const questions = selectedLanguage ? getQuestions(selectedLanguage) : [];
 
-  const sections = questions.length > 0 
+  const sections = questions.length > 0
     ? [...new Set(questions.map(q => q.section))].map(s => `${t.section} ${s + 1}`)
     : [];
 
@@ -496,7 +552,7 @@ export default function Survey() {
 
   const handleAnswer = (questionId: string, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[questionId]) {
       setErrors(prev => {
@@ -553,7 +609,7 @@ export default function Survey() {
 
     questions.forEach(question => {
       if (!shouldShowQuestion(question)) return;
-      
+
       const error = validateField(question.id, answers[question.id] || '');
       if (error) {
         allErrors[question.id] = error;
@@ -582,7 +638,7 @@ export default function Survey() {
     try {
       // Replace with your actual API endpoint
       const API_ENDPOINT = '/api/api/survey/submit';
-      
+
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
@@ -599,7 +655,7 @@ export default function Survey() {
 
       const result = await response.json();
       console.log('Survey submitted successfully:', result);
-      
+
       setIsComplete(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
@@ -650,7 +706,6 @@ export default function Survey() {
           <h2 className="text-3xl font-bold text-gray-800 mb-4">{t.thankYou}</h2>
           <p className="text-gray-600 text-lg mb-6">{t.thankYouMsg}</p>
           <div className="bg-purple-50 rounded-lg p-6 mb-6">
-            <p className="text-purple-800 font-semibold mb-2">🎁 20% Discount!</p>
             <p className="text-purple-600 text-sm">We will contact you soon</p>
           </div>
           <button
@@ -691,7 +746,7 @@ export default function Survey() {
 
         <div className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">{sections[currentSection]}</h2>
-          
+
           {/* Progress Bar */}
           <div className="bg-white rounded-2xl shadow-md p-6 mb-8">
             <div className="flex items-center justify-between mb-4">
@@ -711,29 +766,26 @@ export default function Survey() {
               {sections.map((section, index) => (
                 <div key={index} className="flex items-center flex-1">
                   <div className="flex flex-col items-center flex-1">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
-                      index < currentSection
-                        ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg scale-110'
-                        : index === currentSection
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${index < currentSection
+                      ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg scale-110'
+                      : index === currentSection
                         ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg scale-110 ring-4 ring-indigo-100'
                         : 'bg-gray-200 text-gray-500'
-                    }`}>
+                      }`}>
                       {index < currentSection ? (
                         <CheckCircle2 className="w-6 h-6" />
                       ) : (
                         index + 1
                       )}
                     </div>
-                    <span className={`text-xs mt-2 font-medium text-center ${
-                      index === currentSection ? 'text-indigo-600' : 'text-gray-500'
-                    }`}>
+                    <span className={`text-xs mt-2 font-medium text-center ${index === currentSection ? 'text-indigo-600' : 'text-gray-500'
+                      }`}>
                       {section}
                     </span>
                   </div>
                   {index < sections.length - 1 && (
-                    <div className={`h-1 flex-1 mx-2 rounded-full transition-all duration-300 ${
-                      index < currentSection ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gray-200'
-                    }`} />
+                    <div className={`h-1 flex-1 mx-2 rounded-full transition-all duration-300 ${index < currentSection ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gray-200'
+                      }`} />
                   )}
                 </div>
               ))}
@@ -782,11 +834,10 @@ export default function Survey() {
                       <select
                         value={answers[question.id] || ''}
                         onChange={(e) => handleAnswer(question.id, e.target.value)}
-                        className={`w-full p-3 border-2 rounded-lg focus:outline-none text-gray-700 transition ${
-                          hasError
-                            ? 'border-red-500 focus:border-red-500 bg-red-50'
-                            : 'border-gray-300 focus:border-purple-500'
-                        }`}
+                        className={`w-full p-3 border-2 rounded-lg focus:outline-none text-gray-700 transition ${hasError
+                          ? 'border-red-500 focus:border-red-500 bg-red-50'
+                          : 'border-gray-300 focus:border-purple-500'
+                          }`}
                       >
                         <option value="">{t.selectAnswer}</option>
                         {(question.options || []).map((option, i) => (
@@ -806,15 +857,14 @@ export default function Survey() {
                     <div>
                       <div className="space-y-3">
                         {(question.options || []).map((option, i) => (
-                          <label 
-                            key={i} 
-                            className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition ${
-                              hasError
-                                ? 'border-red-300 bg-red-50'
-                                : answers[question.id] === option
+                          <label
+                            key={i}
+                            className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition ${hasError
+                              ? 'border-red-300 bg-red-50'
+                              : answers[question.id] === option
                                 ? 'border-purple-500 bg-purple-50'
                                 : 'border-gray-200 hover:bg-purple-50 hover:border-purple-300'
-                            }`}
+                              }`}
                           >
                             <input
                               type="radio"
@@ -844,11 +894,10 @@ export default function Survey() {
                         value={answers[question.id] || ''}
                         onChange={(e) => handleAnswer(question.id, e.target.value)}
                         placeholder={question.placeholder || ''}
-                        className={`w-full p-3 border-2 rounded-lg focus:outline-none text-gray-700 transition ${
-                          hasError
-                            ? 'border-red-500 focus:border-red-500 bg-red-50'
-                            : 'border-gray-300 focus:border-purple-500'
-                        }`}
+                        className={`w-full p-3 border-2 rounded-lg focus:outline-none text-gray-700 transition ${hasError
+                          ? 'border-red-500 focus:border-red-500 bg-red-50'
+                          : 'border-gray-300 focus:border-purple-500'
+                          }`}
                       />
                       {hasError && (
                         <p className="text-red-600 text-sm mt-2 flex items-center">
@@ -867,22 +916,20 @@ export default function Survey() {
             <button
               onClick={handlePrevious}
               disabled={currentSection === 0}
-              className={`px-6 py-3 rounded-lg transition ${
-                currentSection === 0
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className={`px-6 py-3 rounded-lg transition ${currentSection === 0
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
             >
               {t.previous}
             </button>
             <button
               onClick={handleNext}
               disabled={isSubmitting}
-              className={`px-8 py-3 rounded-lg transition flex items-center ${
-                isSubmitting
-                  ? 'bg-purple-400 cursor-not-allowed'
-                  : 'bg-purple-600 hover:bg-purple-700'
-              } text-white`}
+              className={`px-8 py-3 rounded-lg transition flex items-center ${isSubmitting
+                ? 'bg-purple-400 cursor-not-allowed'
+                : 'bg-purple-600 hover:bg-purple-700'
+                } text-white`}
             >
               {isSubmitting ? (
                 <>

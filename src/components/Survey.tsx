@@ -265,7 +265,7 @@ export default function Survey() {
         { id: "quickDecision", q: "لو وجد حل للاستشارة السريعة بلغتك، هل ستشترك؟", type: "radio", section: 2, options: ["نعم، فوراً", "ربما، أحتاج للتفكير", "لا"], required: true },
         { id: "legalTechServices", q: "هل جربت اي خدمات تقنيه قانونيه في السعودية؟", type: "radio", section: 2, options: ["نعم", "لا"], required: true },
         { id: "legalTechServiceName", q: "اذكر اسمها", type: "text", section: 2, condition: "legalTechServices", conditionValue: "نعم", placeholder: "اكتب اسم الخدمة...", required: true },
-        { id: "legalTechConsideration", q: "ما هو السعر العادل لك لأستخدام هذه الخدمة؟", type: "select", section: 2, options: ["400-800 SAR", "800-1,500 SAR", "1,500-3,000 SAR", "More than 3,000 SAR"], required: true },
+        { id: "legalTechConsideration", q: "ما هو السعر المناسب لك لأستخدام هذه الخدمة؟", type: "select", section: 2, options: ["150-300 ريال", "301-500 ريال", "501-1,000 ريال", "اكثر من 1,000 ريال"], required: true },
         { id: "giveawayInterest", q: "🎁 هل ترغب بالسحب على هدية مجانية؟", type: "radio", section: 2, options: ["نعم، أرغب", "لا، لا أرغب"], required: true },
         { id: "email", q: "📧 البريد الإلكتروني", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "example@email.com", required: true },
         { id: "phone", q: "📱 رقم الجوال (اختياري)", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "نعم، أرغب", placeholder: "05xxxxxxxx", required: false },
@@ -288,7 +288,7 @@ export default function Survey() {
           q: "What is a fair price for you to use this service?",
           type: "select",
           section: 2,
-          options: ["400–800 SAR", "800–1,500 SAR", "1,500–3,000 SAR", "More than 3,000 SAR"],
+          options: ["150–300 SAR", "301–500 SAR", "501–1,000 SAR", "More than 1,000 SAR"],
           required: true
         }, { id: "giveawayInterest", q: "🎁 Would you like to enter a prize draw?", type: "radio", section: 2, options: ["Yes, I would", "No, thanks"], required: true },
         { id: "email", q: "📧 Email ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Yes, I would", placeholder: "example@email.com", required: true },
@@ -311,7 +311,7 @@ export default function Survey() {
           q: "Ano ang patas na presyo para sa iyo upang magamit ang serbisyong ito?",
           type: "select",
           section: 2,
-          options: ["400–800 SAR", "800–1,500 SAR", "1,500–3,000 SAR", "Higit sa 3,000 SAR"],
+          options: ["150–300 SAR", "301–500 SAR", "501–1,000 SAR", "Higit sa 1,000 SAR"],
           required: true
         }, { id: "giveawayInterest", q: "🎁 Sumali sa prize draw?", type: "radio", section: 2, options: ["Oo", "Hindi"], required: true },
         { id: "email", q: "📧 Email ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Oo", placeholder: "example@email.com", required: true },
@@ -336,7 +336,7 @@ export default function Survey() {
           q: "اس سروس کو استعمال کرنے کے لیے آپ کے لیے مناسب قیمت کیا ہوگی؟",
           type: "select",
           section: 2,
-          options: ["400–800 ریال", "800–1,500 ریال", "1,500–3,000 ریال", "3,000 ریال سے زیادہ"],
+          options: ["150–300 ریال", "301–500 ریال", "501–1,000 ریال", "1,000 ریال سے زیادہ"],
           required: true
         }, { id: "giveawayInterest", q: "🎁 کیا آپ انعامی قرعہ اندازی میں حصہ لینا چاہتے ہیں؟", type: "radio", section: 2, options: ["ہاں", "نہیں"], required: true },
         { id: "email", q: "📧 ای میل ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "ہاں", placeholder: "example@email.com", required: true },
@@ -362,7 +362,7 @@ export default function Survey() {
           q: "এই সেবা ব্যবহারের জন্য আপনার কাছে কোন মূল্যটি ন্যায্য মনে হয়?",
           type: "select",
           section: 2,
-          options: ["৪০০–৮০০ রিয়াল", "৮০০–১,৫০০ রিয়াল", "১,৫০০–৩,০০০ রিয়াল", "৩,০০০ রিয়ালের বেশি"],
+          options: ['১৫০–৩০০ রিয়াল', '৩০১–৫০০ রিয়াল', '৫০১–১,০০০ রিয়াল', '১,০০০ রিয়ালের বেশি'],
           required: true
         }, { id: "giveawayInterest", q: "🎁 আপনি কি উপহার ড্র-এ অংশ নিতে চান?", type: "radio", section: 2, options: ["হ্যাঁ", "না"], required: true },
         { id: "email", q: "📧 ইমেইল ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "হ্যাঁ", placeholder: "example@email.com", required: true },
@@ -388,7 +388,7 @@ export default function Survey() {
           q: "Berapakah harga yang adil bagi anda untuk menggunakan perkhidmatan ini?",
           type: "select",
           section: 2,
-          options: ["400–800 SAR", "800–1,500 SAR", "1,500–3,000 SAR", "Lebih daripada 3,000 SAR"],
+          options: ["150–300 SAR", "301–500 SAR", "501–1,000 SAR", "Lebih daripada 1,000 SAR"],
           required: true
         }, { id: "giveawayInterest", q: "🎁 Adakah anda mahu sertai cabutan bertuah?", type: "radio", section: 2, options: ["Ya", "Tidak"], required: true },
         { id: "email", q: "📧 Emel ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Ya", placeholder: "example@email.com", required: true },
@@ -414,7 +414,7 @@ export default function Survey() {
           q: "您认为使用此服务的合理价格是多少？",
           type: "select",
           section: 2,
-          options: ["400–800 里亚尔", "800–1,500 里亚尔", "1,500–3,000 里亚尔", "超过 3,000 里亚尔"],
+          options: ["150–300 里亚尔", "301–500 里亚尔", "501–1,000 里亚尔", "超过 1,000 里亚尔"],
           required: true
         }, { id: "giveawayInterest", q: "🎁 您想参加抽奖吗？", type: "radio", section: 2, options: ["想", "不想"], required: true },
         { id: "email", q: "📧 邮箱", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "想", placeholder: "example@email.com", required: true },
@@ -440,7 +440,7 @@ export default function Survey() {
           q: "Waa maxay qiimaha cadaaladda ah ee aad u aragto isticmaalka adeeggan?",
           type: "select",
           section: 2,
-          options: ["400–800 SAR", "800–1,500 SAR", "1,500–3,000 SAR", "Ka badan 3,000 SAR"],
+          options: ["150–300 SAR", "301–500 SAR", "501–1,000 SAR", "Ka badan 1,000 SAR"],
           required: true
         }, { id: "giveawayInterest", q: "🎁 Ma rabtaa inaad ka qayb gasho hadiyadda?", type: "radio", section: 2, options: ["Haa", "Maya"], required: true },
         { id: "email", q: "📧 Email ", type: "text", section: 2, condition: "giveawayInterest", conditionValue: "Haa", placeholder: "example@email.com", required: true },
@@ -466,7 +466,7 @@ export default function Survey() {
           q: "इस सेवा का उपयोग करने के लिए आपके अनुसार उचित मूल्य क्या होगा?",
           type: "select",
           section: 2,
-          options: ["400–800 सऊदी रियाल", "800–1,500 सऊदी रियाल", "1,500–3,000 सऊदी रियाल", "3,000 सऊदी रियाल से अधिक"],
+          options: ["150–300 सऊदी रियाल", "301–500 सऊदी रियाल", "501–1,000 सऊदी रियाल", "1,000 सऊदी रियाल से अधिक"],
           required: true
         },
         { id: "giveawayInterest", q: "🎁 क्या आप उपहार ड्रा में भाग लेना चाहते हैं?", type: "radio", section: 2, options: ["हाँ", "नहीं"], required: true },
@@ -544,7 +544,7 @@ export default function Survey() {
     setErrors(newErrors);
     return isValid;
   };
-
+  // 
   function shouldShowQuestion(question: Question): boolean {
     if (!question.condition) return true;
     return answers[question.condition] === question.conditionValue;
